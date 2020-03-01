@@ -9,6 +9,9 @@ Teensy 4.0 RC/LED Controller
 * 4ch rc receiver/transmitter (test with Futaba R334SBS-E/Futaba 7PX)
 * Jetson Nano (I don't test on raspberry pi3/4.)
 
+## Known issue
+* sometime i2c error occures with PCA9685 emulator.
+
 ## Teensy Setup
 [Arduino IDE](https://www.arduino.cc/en/main/software)<br>
 [Teensyduino](https://www.pjrc.com/teensy/td_download.html)<br>
