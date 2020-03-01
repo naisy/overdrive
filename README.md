@@ -71,10 +71,10 @@ Steering and throttle: These are normal rc car setting.<br>
 * Transmitter CH4 delete records. (delete 120 records.)
 
 ## Autonomous driving
-* Transmitter CH3 auto mode.
+* Transmitter CH3 auto mode.<br>
 If you think your rc car will crash, apply the brakes immediately. Overdrive gives priority to manual operation.<br>
 One second after you release your hand, it switches to automatic mode.<br>
 
 ## Teensy 4.0 OVERDRIVE beta1
-See [Teensy 4.0 OVERDRIVE beta1].(./README_teensy40_overdrive_beta1.md)<br>
+See [Teensy 4.0 OVERDRIVE beta1](./README_teensy40_overdrive_beta1.md)<br>
 
