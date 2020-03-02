@@ -234,15 +234,16 @@ const int OUTPUT_CH2 = 1; // array index of PWM_OUTPUT_PIN
 /*
  * LED OUTPUT PIN
  * SYSTEM LED: 0
- * HEAD LIGHT: 1
- * BRAKE LIGHT: 2
- * OTHER: 3
+ * HEAD LIGHT: 2
+ * BRAKE LIGHT: 6
+ * OTHER: 10
  */
-const int LED_PIN[]  = {0, 1, 2, 3};
+const int LED_PIN[]  = {0, 2, 6, 10};
 const int NUM_LEDS   = len(LED_PIN);
 
 /* LED_CONFIG:
- * PIN, PATTERN, HZ, MIN, MAX, CURRENT, INCREMENT, CURRENT_INCREMENT, 
+ * PIN (not used. use LED_PIN[index])
+ * PATTERN, HZ, MIN, MAX, CURRENT, INCREMENT, CURRENT_INCREMENT, 
  * 8:BLINK_ON_TIMES, BLINK_ON_HZ_LENGTH, BLINK_OFF_HZ_LENGTH, BLINK_CURRENT_HZ, BLINK_ON_COUNT, BLINK_CURRENT_STATUS,
  * 14:BB_LENGTH, BB_ON_TIMES, BB_ON_HZ_LENGTH, BB_OFF_HZ_LENGTH, BB_GLOBAL_HZ, BB_ON_COUNT, BB_CURRENT_STATUS, BB_LOCAL_HZ
  */
@@ -258,12 +259,12 @@ const int LED_FLUCTUATION = 2; // LED: 0 to 255
 const int LED_BLINK = 3; // LED: 0 or 255
 const int LED_BLINK2 = 5; // LED: 0 or 255
 const int LED_BLINK_X_BLINK = 4; // LED: 0 or 255
-const int LED_CONFIG[] = {3,  LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}; // initial value
+const int LED_CONFIG[] = {3,  LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}; // sample initial value
 int led_configs[NUM_LEDS][len(LED_CONFIG)] = {
   {0, LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
   {1, LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
   {2, LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
-  {3,  LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}
+  {3, LED_OFF, LED_HZ, LED_POWER_MIN, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}
 };
 const int SYSTEM_LIGHT  = 0;
 const int HEAD_LIGHT    = 1;
