@@ -10,7 +10,10 @@ Teensy 4.0 RC/LED Controller
 * Jetson Nano (I don't test on raspberry pi3/4.)
 
 ## Known issue
-* sometime i2c error occures with PCA9685 emulator.
+* sometime i2c error occures with PCA9685 emulator.<br>
+* It seems to be greatly affected by motor noise.<br>
+If you put the Teensy before the front bumper, there is no problem up to 50% throttle, but the waveform will be distorted at 100% throttle.<br>
+If the Teensy is installed in the center of the vehicle, the waveform will be distorted at 25% throttle.<br>
 
 ## Teensy Setup
 [Arduino IDE](https://www.arduino.cc/en/main/software)<br>
