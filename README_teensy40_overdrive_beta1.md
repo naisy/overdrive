@@ -15,18 +15,20 @@ In these pictures, LED soldering is not yet complete.<br>
 
 ## Tuning
 Using an oscilloscope, enter the time (in microseconds) during which the voltage is HIGH.<br>
-<b>Important: MIN is minimum pulse. You can forget which is left, right, forward, brake.</b>
+<b>Important:</b><br>
+* MIN is minimum pulse. You can forget which is left, right, forward, brake.</b>
+* Enter only the neutral pulse exactly. Only 2 microseconds of neutral error is allowed to support delicate control and high power rc car. The correct neutral shows 0.0 as Joystick value. You can also use DEBUG 1 to see the pulses using a serial monitor.
 
 ```
 /* STEERING PULSE */
-const int RECV_CH1_PULSE_LENGTH_MIN     = 1240; // maximum steering right value
-const int NEUTRAL_STEERING_PULSE_LENGTH = 1520; // neutral steering value
-const int RECV_CH1_PULSE_LENGTH_MAX     = 1740; // maximum steering left value
+const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
+const int NEUTRAL_STEERING_PULSE_LENGTH = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
 
 /* THROTTLE PULSE */
-const int RECV_CH2_PULSE_LENGTH_MIN     = 1080; // maximum throttle forward value
+const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
 const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
-const int RECV_CH2_PULSE_LENGTH_MAX     = 1980; // maximum throttle brake value
+const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
 ```
 If you use reversed throttle, then set REVERSE 1. (default 0)
 ```

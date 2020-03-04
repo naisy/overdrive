@@ -50,18 +50,20 @@ PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But ot
 # 
 # #STEERING
 STEERING_CHANNEL = 0            #channel on the 9685 pwm board 0-15
-STEERING_LEFT_PWM = 310         #pwm value for full left steering
-STEERING_RIGHT_PWM = 430        #pwm value for full right steering
+STEERING_LEFT_PWM = 250          # 1000us
+STEERING_RIGHT_PWM = 500         # 2000us
+#STEERING_LEFT_PWM = 310         #pwm value for full left steering
+#STEERING_RIGHT_PWM = 430        #pwm value for full right steering
 # 
 # #THROTTLE
 THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
 # TAMIYA TT-02 YM-SS58/Normal 27T
-THROTTLE_FORWARD_PWM = 278      #pwm value for max forward throttle
-THROTTLE_STOPPED_PWM = 380      #pwm value for no movement
-THROTTLE_REVERSE_PWM = 430      #pwm value for max reverse throttle
-#THROTTLE_FORWARD_PWM = 370      #pwm value for max forward throttle
-#THROTTLE_STOPPED_PWM = 415      #pwm value for no movement
-#THROTTLE_REVERSE_PWM = 460      #pwm value for max reverse throttle
+THROTTLE_FORWARD_PWM = 250       # 1000us
+THROTTLE_STOPPED_PWM = 380       # 1520us
+THROTTLE_REVERSE_PWM = 500       # 2000us
+#THROTTLE_FORWARD_PWM = 278      #pwm value for max forward throttle
+#THROTTLE_STOPPED_PWM = 380      #pwm value for no movement
+#THROTTLE_REVERSE_PWM = 430      #pwm value for max reverse throttle
 # 
 # #DC_STEER_THROTTLE with one motor as steering, one as drive
 # #these GPIO pinouts are only used for the DRIVE_TRAIN_TYPE=DC_STEER_THROTTLE
@@ -88,8 +90,8 @@ DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localiz
 MAX_EPOCHS = 50                #how many times to visit all records of your data
 # SHOW_PLOT = True                #would you like to see a pop up display of final loss?
 # VEBOSE_TRAIN = True             #would you like to see a progress bar with text during training?
-USE_EARLY_STOP = False           #would you like to stop the training if we see it's not improving fit?
-# EARLY_STOP_PATIENCE = 5         #how many epochs to wait before no improvement
+# USE_EARLY_STOP = True           #would you like to stop the training if we see it's not improving fit?
+EARLY_STOP_PATIENCE = 10         #how many epochs to wait before no improvement
 # MIN_DELTA = .0005               #early stop will want this much loss change before calling it improved.
 # PRINT_MODEL_SUMMARY = True      #print layers and weights to stdout
 # OPTIMIZER = None                #adam, sgd, rmsprop, etc.. None accepts default
@@ -133,7 +135,7 @@ AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle 
 CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4)
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
 # NETWORK_JS_SERVER_IP = "192.168.0.1"#when listening for network joystick control, which ip is serving this information
-JOYSTICK_DEADZONE = 0.05             # when non zero, this is the smallest throttle before recording triggered.
+JOYSTICK_DEADZONE = 0.02             # when non zero, this is the smallest throttle before recording triggered.
 # JOYSTICK_THROTTLE_DIR = -1.0        # use -1.0 to flip forward/backward, use 1.0 to use joystick's natural forward/backward
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle

@@ -34,13 +34,23 @@
 #include "TeensyThreads.h"
 
 #define len(x)  int(sizeof(x) / sizeof((x)[0]))
-// FOR TT-02 LaFerrari
-const int RECV_CH1_PULSE_LENGTH_MIN     = 1240; // maximum steering right value
-const int NEUTRAL_STEERING_PULSE_LENGTH = 1520; // neutral steering value
-const int RECV_CH1_PULSE_LENGTH_MAX     = 1740; // maximum steering left value
-const int RECV_CH2_PULSE_LENGTH_MIN     = 1080; // maximum throttle forward value
+
+const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
+const int NEUTRAL_STEERING_PULSE_LENGTH = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
+const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
 const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
-const int RECV_CH2_PULSE_LENGTH_MAX     = 1980; // maximum throttle brake value
+const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
+
+// FOR TT-02 LaFerrari
+/*
+const int RECV_CH1_PULSE_LENGTH_MIN     = 1228; // maximum steering right value
+const int NEUTRAL_STEERING_PULSE_LENGTH = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_MAX     = 1736; // maximum steering left value
+const int RECV_CH2_PULSE_LENGTH_MIN     = 1113; // maximum throttle forward value
+const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
+const int RECV_CH2_PULSE_LENGTH_MAX     = 1970; // maximum throttle brake value
+*/
 // FOR TT-02 RR GeForce TS-50A ESC
 /*
 const int RECV_CH1_PULSE_LENGTH_MIN     = 1240; // maximum steering right value
@@ -115,13 +125,13 @@ const int speed_down_range[]    = {NEUTRAL_STEERING_PULSE_LENGTH+speed_down[0], 
  * SYSTEM_CH1: 13   - System dead or alive check
  */
 const byte INPUT_PIN[]  = {22, 21, 20, 17, 12, 11, 13};
-const byte RECV_CH1     = 0; // index of array, exInterrupt
-const byte RECV_CH2     = 1; // index of array, exInterrupt
+const byte RECV_CH1     = 0; // index of array, Interrupt
+const byte RECV_CH2     = 1; // index of array, Interrupt
 const byte RECV_CH3     = 2; // index of array, Interrupt
 const byte RECV_CH4     = 3; // index of array, Interrupt
-const byte PCA9685_CH1  = 4; // index of array, exInterrupt
-const byte PCA9685_CH2  = 5; // index of array, exInterrupt
-const byte SYSTEM_CH1   = 6; // index of array, exInterrupt, with no pulse check
+const byte PCA9685_CH1  = 4; // index of array, Interrupt
+const byte PCA9685_CH2  = 5; // index of array, Interrupt
+const byte SYSTEM_CH1   = 6; // index of array, Interrupt, with no pulse check
 
 /* 
  * micros_last[RECV_CH1]
@@ -326,13 +336,15 @@ void setup()
 {
   Serial.begin(57600);
 
- // PIN MODE: INPUT
+  // PIN MODE: INPUT
   pinMode(INPUT_PIN[RECV_CH1], INPUT);
   pinMode(INPUT_PIN[RECV_CH2], INPUT);
   pinMode(INPUT_PIN[RECV_CH3], INPUT);
   pinMode(INPUT_PIN[RECV_CH4], INPUT);
+#if !USE_PCA9685_EMULATOR
   pinMode(INPUT_PIN[PCA9685_CH1], INPUT);
   pinMode(INPUT_PIN[PCA9685_CH2], INPUT);
+#endif
 #if USE_SYSTEM_PING
   pinMode(INPUT_PIN[SYSTEM_CH1], INPUT);
 #endif
@@ -358,11 +370,13 @@ void setup()
 
 #if USE_JOYSTICK
   /* Initialize Joystick */
+  Joystick.useManualSend(true);
   Joystick.button(1, 0);
   Joystick.button(2, 0);
 
   Joystick.X(512); // "value" is from 0 to 1023. 512 is resting position
   Joystick.Y(512);
+
 #endif
 
 #if USE_PCA9685_EMULATOR
@@ -392,9 +406,9 @@ void onSignalChanged1(void)
   /* RECV_CH1 */
   high_low[RECV_CH1] = readPulse(RECV_CH1);
   if (high_low[RECV_CH1] == LOW) {
-    /* FORCE RECEVER MODE THRESHOLD CHECK */
-    if (input_pulse_length[RECV_CH1] <= STEERING_PULSE_LENGTH_MIN_THRESHOLD ||
-        STEERING_PULSE_LENGTH_MAX_THRESHOLD <= input_pulse_length[RECV_CH1]) {
+    /* FORCE RECEVER MODE THRESHOLD CHECK. IF PULSE IS OUT OF RANGE, THEN SWITCH TO FORCE RECEVER MODE. */
+    if (input_pulse_length[RECV_CH1] < STEERING_PULSE_LENGTH_MIN_THRESHOLD ||
+        STEERING_PULSE_LENGTH_MAX_THRESHOLD < input_pulse_length[RECV_CH1]) {
       status[ST_MANUAL_STEERING] = FORCE;
       micros_last[FORCE_TIME] = micros();
     } else {
@@ -420,9 +434,9 @@ void onSignalChanged2(void)
   /* RECV_CH2 */
   high_low[RECV_CH2] = readPulse(RECV_CH2);
   if (high_low[RECV_CH2] == LOW) {
-    /* FORCE RECEVER MODE THRESHOLD CHECK */
-    if (input_pulse_length[RECV_CH2] <= THROTTLE_PULSE_LENGTH_MIN_THRESHOLD ||
-        THROTTLE_PULSE_LENGTH_MAX_THRESHOLD <= input_pulse_length[RECV_CH2]) {
+    /* FORCE RECEVER MODE THRESHOLD CHECK. IF PULSE IS OUT OF RANGE, THEN SWITCH TO FORCE RECEVER MODE. */
+    if (input_pulse_length[RECV_CH2] < THROTTLE_PULSE_LENGTH_MIN_THRESHOLD ||
+        THROTTLE_PULSE_LENGTH_MAX_THRESHOLD < input_pulse_length[RECV_CH2]) {
       status[ST_MANUAL_THROTTLE] = FORCE;
       micros_last[FORCE_TIME] = micros();
     } else {
@@ -1150,13 +1164,17 @@ void loop()
       Serial.print(",");
       Serial.print(hz_counter);
       Serial.print(",");
-      Serial.print(STEERING_PULSE_LENGTH_MIN_THRESHOLD);
+      if (input_pulse_length[RECV_CH1] < NEUTRAL_STEERING_PULSE_LENGTH) {
+        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, NEUTRAL_STEERING_PULSE_LENGTH, 0, 512));
+      } else {
+        Serial.print(map(input_pulse_length[RECV_CH1], NEUTRAL_STEERING_PULSE_LENGTH, RECV_CH1_PULSE_LENGTH_MAX, 512, 1023));
+      }
       Serial.print(",");
-      Serial.print(STEERING_PULSE_LENGTH_MAX_THRESHOLD);
-      Serial.print(",");
-      Serial.print(THROTTLE_PULSE_LENGTH_MIN_THRESHOLD);
-      Serial.print(",");
-      Serial.print(THROTTLE_PULSE_LENGTH_MAX_THRESHOLD);
+      if (input_pulse_length[RECV_CH2] < NEUTRAL_THROTTLE_PULSE_LENGTH) {
+        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, NEUTRAL_THROTTLE_PULSE_LENGTH, 0, 512));
+      } else {
+        Serial.print(map(input_pulse_length[RECV_CH2], NEUTRAL_THROTTLE_PULSE_LENGTH, RECV_CH2_PULSE_LENGTH_MAX, 512, 1023));
+      }
       Serial.print("]");
       Serial.println("");
 #endif
@@ -1184,9 +1202,31 @@ void loop()
             /* PCA9685 MODE */
             Joystick.button(1, 1);
           }
-
-        Joystick.X(map(input_pulse_length[RECV_CH1],  RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_MAX, 0, 1023));
-        Joystick.Y(map(input_pulse_length[RECV_CH2],  RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_MAX, 0, 1023));
+        if (NEUTRAL_STEERING_PULSE_LENGTH -2 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= NEUTRAL_STEERING_PULSE_LENGTH +2) {
+          // NEUTRAL +- 10us will be neutral. This is for noize cancel.
+          Joystick.X(512);
+        } else if (input_pulse_length[RECV_CH1] < NEUTRAL_STEERING_PULSE_LENGTH) {
+          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, NEUTRAL_STEERING_PULSE_LENGTH, 0, 449));
+        } else {
+          Joystick.X(map(input_pulse_length[RECV_CH1], NEUTRAL_STEERING_PULSE_LENGTH, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
+        }
+        if (NEUTRAL_THROTTLE_PULSE_LENGTH -2 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= NEUTRAL_THROTTLE_PULSE_LENGTH +2) {
+          Joystick.Y(512);
+        } else if (input_pulse_length[RECV_CH2] < NEUTRAL_THROTTLE_PULSE_LENGTH) {
+          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, NEUTRAL_THROTTLE_PULSE_LENGTH, 0, 449));
+        } else {
+          Joystick.Y(map(input_pulse_length[RECV_CH2], NEUTRAL_THROTTLE_PULSE_LENGTH, RECV_CH2_PULSE_LENGTH_MAX, 575, 1023));
+        }
+        // 574 is 0
+        // 575 is dead value.
+        // 576 is 0.00518799
+        // 580 is 0.01556396
+        //Joystick.Z(580);
+        //Joystick.Zrotate(590); 
+        //Joystick.sliderLeft(600); // 
+        //Joystick.sliderRight(610); // 
+  
+        Joystick.send_now();
       }
 #endif
 

@@ -11,11 +11,8 @@ Teensy 4.0 RC/LED Controller
 
 ## Known issue
 * sometime i2c error occures with PCA9685 emulator.<br>
-* Some motors seem to be affected by noise. (maybe tired motor?)<br>
-  * TT-02 27T normal motor: no effect. good condition.<br>
-  * YM-SS58: It seems to be greatly affected by motor noise.<br>
-When I put the Teensy before the front bumper, there is no problem up to 50% throttle, but the interrupt pulse check will be distorted at 100% throttle.<br>
-When I put the Teensy in the center of the rc car, the interrupt pulse check will be distorted at 25% throttle.<br>
+* Some motors seem to be affected by noise. (maybe tired motor)<br>
+  * If you feels bad signal with throttle on, try polishing the commutator and brush of the motor.<br>
 
 ## Teensy Setup
 [Arduino IDE](https://www.arduino.cc/en/main/software)<br>
