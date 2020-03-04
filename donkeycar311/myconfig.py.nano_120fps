@@ -59,7 +59,7 @@ STEERING_RIGHT_PWM = 500         # 2000us
 THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
 # TAMIYA TT-02 YM-SS58/Normal 27T
 THROTTLE_FORWARD_PWM = 250       # 1000us
-THROTTLE_STOPPED_PWM = 380       # 1520us
+THROTTLE_STOPPED_PWM = 370       # 1520us
 THROTTLE_REVERSE_PWM = 500       # 2000us
 #THROTTLE_FORWARD_PWM = 278      #pwm value for max forward throttle
 #THROTTLE_STOPPED_PWM = 380      #pwm value for no movement
