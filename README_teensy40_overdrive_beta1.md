@@ -7,7 +7,6 @@
 [teensy40_overdrive_beta1/teensy40_overdrive_beta1.ino](./teensy40_overdrive_beta1/teensy40_overdrive_beta1.ino)
 
 ## Wiring
-In these pictures, LED soldering is not yet complete.<br>
 ![](./teensy40_overdrive_beta1/wire1.jpg)<br>
 ![](./teensy40_overdrive_beta1/wire2.jpg)<br>
 ![](./teensy40_overdrive_beta1/wire3.jpg)<br>
