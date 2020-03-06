@@ -62,9 +62,10 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward valu
 */
 #define DEBUG 0
 #define USE_SYSTEM_PING 0
-#define USE_JOYSTICK 1         // /dev/input/js1
+#define USE_JOYSTICK 1         // Teensy's joystick is /dev/input/js1
 #define REVERSE 0              // TS-50A ESC should be 1. This uses only for led controll.
-#define USE_PCA9685_EMULATOR 1
+#define USE_PCA9685_EMULATOR 1 // 1: use PCA9685 emulator. 0: use PCA9685 board and P1/P2 pins.
+#define USE_3CH_TARNSMITTER 0  // 0: use 4 channel transmitter.(Futaba 7PX/4PM etc.) 1: use 3 channel transmitter.(Tamiya TTU-08 etc.)
 
 /*
  * Threshold for receiver priority.
@@ -341,7 +342,9 @@ void setup()
   pinMode(INPUT_PIN[RECV_CH1], INPUT);
   pinMode(INPUT_PIN[RECV_CH2], INPUT);
   pinMode(INPUT_PIN[RECV_CH3], INPUT);
+#if !USE_3CH_TRANSMITTER
   pinMode(INPUT_PIN[RECV_CH4], INPUT);
+#endif
 #if !USE_PCA9685_EMULATOR
   pinMode(INPUT_PIN[PCA9685_CH1], INPUT);
   pinMode(INPUT_PIN[PCA9685_CH2], INPUT);
@@ -353,7 +356,9 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[RECV_CH1]), onSignalChanged1, CHANGE); // RECEIVER
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[RECV_CH2]), onSignalChanged2, CHANGE); // RECEIVER
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[RECV_CH3]), onSignalChanged3, CHANGE); // ST_MODE
+#if !USE_3CH_TRANSMITTER
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[RECV_CH4]), onSignalChanged4, CHANGE); // ST_DELETE
+#endif
 #if !USE_PCA9685_EMULATOR
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[PCA9685_CH1]), onSignalChanged5, CHANGE); // PCA9685
   attachInterrupt(digitalPinToInterrupt(INPUT_PIN[PCA9685_CH2]), onSignalChanged6, CHANGE); // PCA9685
@@ -1353,5 +1358,4 @@ void loop()
       hz_counter = 0;
     }
 }
-
 

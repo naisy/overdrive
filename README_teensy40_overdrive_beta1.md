@@ -12,6 +12,7 @@
 ![](./teensy40_overdrive_beta1/wire3.jpg)<br>
 ![](./teensy40_overdrive_beta1/reverse.jpg)<br>
 
+
 ## Tuning
 Using an oscilloscope, enter the time (in microseconds) during which the voltage is HIGH.<br>
 <b>Important:</b><br>
@@ -19,6 +20,7 @@ Using an oscilloscope, enter the time (in microseconds) during which the voltage
 * Enter only the neutral pulse exactly. Only 2 microseconds of neutral error is allowed to support delicate control and high power rc car. The correct neutral shows 0.0 as Joystick value. You can also use DEBUG 1 to see the pulses using a serial monitor.<br>
 * MIN and MAX are 1000 and 2000 (us), unless facing obvious problems. However, neutral should be set really accurately. If neutral is perfect, the autonomous driving can reproduce the slowest possible driving with high power motor.<br>
 
+### Teensy
 source: [teensy40_overdrive_beta1.ino](teensy40_overdrive_beta1/teensy40_overdrive_beta1.ino)
 ```
 /* STEERING PULSE */
@@ -39,7 +41,13 @@ If you want to use PCA9685 board, then set USE_PCA9685_EMULATOR 0 and use P1/P2 
 ```
 #define USE_PCA9685_EMULATOR 0
 ```
+If you use 3ch transmitter (Tamiya TT-02 XB's transmitter etc.), then set USE_3CH_TRANSMITTER 1. (default 0)
+```
+#define USE_3CH_TARNSMITTER 0  // 0: use 4 channel transmitter.(Futaba 7PX/4PM etc.) 1: use 3 channel transmitter.(Tamiya TTU-08 etc.)
+```
 
+
+### DonkeyCar
 source: [myconfig.py](donkeycar311/myconfig.py.nano_120fps)
 ```
 THROTTLE_FORWARD_PWM = 250       # 1000us

@@ -6,7 +6,7 @@ Teensy 4.0 RC/LED Controller
 
 ## Requirement
 * Teensy 4.0
-* 4ch rc receiver/transmitter (test with Futaba R334SBS-E/Futaba 7PX)
+* 4ch or 3ch rc receiver/transmitter (test with Futaba R334SBS-E/Futaba 7PX)
 * Jetson Nano (I don't test on raspberry pi3/4.)
 
 ## Known issue
@@ -53,7 +53,7 @@ cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
 cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py
 ```
 
-## Transmitter Settings
+## 4CH Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
 * ch1
   * steering
@@ -64,9 +64,25 @@ Steering and throttle: These are normal rc car setting.<br>
 * ch4
   * delete record.
 
+Futaba 7PX<br>
 ![](./transmitter.jpg)<br>
 ![](./transmitter_manual.jpg)<br>
 ![](./transmitter_auto.jpg)<br>
+
+## 3CH Transmitter Settings
+Steering and throttle: These are normal rc car setting.<br>
+* ch1
+  * steering
+* ch2
+  * throttle
+* ch3
+  * manual - auto mode change.
+
+Tamiya TTU-08 (FINESPEC 2.4G)<br>
+![](./transmitter_3ch.jpg)<br>
+## 3CH Wireing
+![](./transmitter_3ch_wire1.jpg)<br>
+
 
 ## Record training data
 * Transmitter CH3 auto mode.
