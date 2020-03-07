@@ -146,17 +146,22 @@ const byte SYSTEM_CH1   = 6; // index of array, Interrupt, with no pulse check
  * micros_last[DELTA_TIME]
  * micros_last[WAKEUP_TIME]
  * micros_last[FORCE_TIME]
+ * micros_last[AFTER_FIRE_TIME]
  */
-volatile unsigned long micros_last[]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+volatile unsigned long micros_last[]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 const byte CURRENT                     = 7; // index of array
 const byte DELTA_TIME                  = 8; // index of array
 const byte WAKEUP_TIME                 = 9; // index of array
 const byte FORCE_TIME                  = 10; // index of array
+const byte AFTER_FIRE_TIME             = 11; // index of array
 volatile unsigned long micros_ch1      = 0;
 volatile unsigned long micros_ch2      = 0;
 volatile unsigned long rising_start[]  = {0, 0, 0, 0, 0, 0};
 volatile long input_pulse_length[]     = {0, 0, 0, 0, 0, 0};
 volatile int high_low[]                = {0, 0, 0, 0, 0, 0}; // HIGH or LOW
+volatile long last_after_fire_pulse_length   = 0;
+volatile long current_throttle_pulse_length  = 0;
+
 
 /*
  * STATUS
@@ -733,6 +738,19 @@ void led_blink_after_fire_1(int i)
    * 8:BLINK_ON_TIMES, BLINK_ON_HZ_LENGTH, BLINK_OFF_HZ_LENGTH, BLINK_CURRENT_HZ, BLINK_ON_COUNT, BLINK_CURRENT_STATUS,
    * 14:BB_LENGTH, BB_ON_TIMES, BB_ON_HZ_LENGTH, BB_OFF_HZ_LENGTH, BB_GLOBAL_HZ, BB_ON_COUNT, BB_CURRENT_STATUS, BB_LOCAL_HZ
    */
+
+  /* MISFIRING SYSTEM */
+  micros_last[AFTER_FIRE_TIME] = micros();
+  /* PCA9685 MODE */
+  if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
+    last_after_fire_pulse_length = input_pulse_length[PCA9685_CH2];
+  }
+  /* RECEVER MODE */
+  else {
+    last_after_fire_pulse_length = input_pulse_length[RECV_CH2];
+  }
+
+
   if ((led_configs[i][8] > led_configs[i][12])
       && (
           (led_configs[i][11] % (led_configs[i][9]+led_configs[i][10]+1)) == 0)) {
@@ -1051,6 +1069,22 @@ void loop()
               }
             else
               {
+                /* MISFIRING SYSTEM */
+                if (micros() > micros_last[AFTER_FIRE_TIME] + 1000000) {
+                  if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
+                    current_throttle_pulse_length = input_pulse_length[PCA9685_CH2];
+                  } else {
+                    current_throttle_pulse_length = input_pulse_length[RECV_CH2];
+                  }
+#if !REVERSE
+                  if (current_throttle_pulse_length <= last_after_fire_pulse_length - 4) {
+#else
+                  if (current_throttle_pulse_length >= last_after_fire_pulse_length + 4) {
+#endif
+                    set_led_blink_after_fire_1(AFTER_FIRE_1, 2, LED_POWER_MAX, true);
+                    set_led_blink_after_fire_2(AFTER_FIRE_2, 2, LED_POWER_MAX, true);
+                  }
+                }
                 if (DEBUG) Serial.print("OTHER");
               }
             }
@@ -1208,6 +1242,22 @@ void loop()
               }
             else
               {
+                /* MISFIRING SYSTEM */
+                if (micros() > micros_last[AFTER_FIRE_TIME] + 1000000) {
+                  if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
+                    current_throttle_pulse_length = input_pulse_length[PCA9685_CH2];
+                  } else {
+                    current_throttle_pulse_length = input_pulse_length[RECV_CH2];
+                  }
+#if !REVERSE
+                  if (current_throttle_pulse_length <= last_after_fire_pulse_length - 4) {
+#else
+                  if (current_throttle_pulse_length >= last_after_fire_pulse_length + 4) {
+#endif
+                    set_led_blink_after_fire_1(AFTER_FIRE_1, 2, LED_POWER_MAX, true);
+                    set_led_blink_after_fire_2(AFTER_FIRE_2, 2, LED_POWER_MAX, true);
+                  }
+                }
                 if (DEBUG) Serial.print("OTHER");
               }
           }
