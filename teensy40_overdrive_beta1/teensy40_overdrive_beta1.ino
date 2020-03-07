@@ -298,7 +298,7 @@ void pca9685_emulator_ch1_thread() {
   uint16_t pulse_ch1 = 0;
   while(1) {
     if (status[ST_MODE] == PCA9685 && status[ST_PING] == ALIVE && status[ST_FORCE_RECEIVER] != FORCE) {
-      pulse_ch1 = pwmEmulation.readChannelUs(OUTPUT_CH1);
+      pulse_ch1 = pwmEmulation.readChannelUs(OUTPUT_CH1); // TODO: need to check the reading time
       if (600 <= pulse_ch1 && pulse_ch1 <= 2600) {
           micros_last[PCA9685_CH1] = micros();
           input_pulse_length[PCA9685_CH1] = pulse_ch1;
@@ -898,7 +898,11 @@ void loop()
         }
 #endif
       /* PCA9685 no signal */
-      if ((micros_last[CURRENT] - micros_last[PCA9685_CH1] > 20000) /* PCA9685 no signal more than 20*1000 microseconds. OR minus value because unsigned long. */
+#if USE_PCA9685_EMULATOR /* need 240000 to 330000ms. */
+      if ((micros_last[CURRENT] - micros_last[PCA9685_CH1] > 50000)
+#else
+      if ((micros_last[CURRENT] - micros_last[PCA9685_CH1] > 20000) /* PCA9685 no signal more than 50*1000 microseconds. OR minus value because unsigned long. */
+#endif
           && (micros_last[CURRENT] > micros_last[PCA9685_CH1])) /* check minus value. if interrupt occured after getting the micros_last[CURRENT] time, then signal is ALIVE. */
         {
           /* switch to dead */
@@ -1266,6 +1270,13 @@ void loop()
       } else {
         Serial.print(map(input_pulse_length[RECV_CH2], NEUTRAL_THROTTLE_PULSE_LENGTH, RECV_CH2_PULSE_LENGTH_MAX, 512, 1023));
       }
+
+      Serial.print(",");
+      Serial.print(micros_last[CURRENT]);
+      Serial.print(",");
+      Serial.print(micros_last[PCA9685_CH1]);
+      Serial.print(",");
+      Serial.print(micros_last[CURRENT] - micros_last[PCA9685_CH1]);
       Serial.print("]");
       Serial.println("");
 #endif
@@ -1340,17 +1351,9 @@ void loop()
       micros_interval = 0;
     }
   }
-  micros_last[WAKEUP_TIME] = micros() + micros_interval + 4;
-  micros_last[DELTA_TIME] = micros();
-  while (true) {
-    delayMicroseconds(micros_interval); // sleep microseconds
-    if (micros() >= micros_last[WAKEUP_TIME]) {
-      micros_slept = micros() - micros_last[DELTA_TIME];
-      break;
-    }
-    micros_interval = 4;
-  }
-  micros_last[CURRENT] = micros();
+  delayMicroseconds(micros_interval); // sleep microseconds
+
+micros_last[CURRENT] = micros();
 
   hz_counter += 1;
   if (hz_counter >= LOOP_HZ) // I found hz_counter starts over 600000000. 
