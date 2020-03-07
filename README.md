@@ -53,7 +53,7 @@ cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
 cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py
 ```
 
-## 4CH Transmitter Settings
+## 4Ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
 * ch1
   * steering
@@ -69,7 +69,7 @@ Futaba 7PX<br>
 ![](./transmitter_manual.jpg)<br>
 ![](./transmitter_auto.jpg)<br>
 
-## 3CH Transmitter Settings
+## 3Ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
 * ch1
   * steering
@@ -100,5 +100,5 @@ One second after you release your hand, it switches to automatic mode.<br>
 See [Teensy 4.0 OVERDRIVE beta1](./README_teensy40_overdrive_beta1.md)<br>
 
 ## Youtube
-After fire: [![AfterFire](https://img.youtube.com/vi/PdYKPAeRLzQ/default.jpg)](https://www.youtube.com/watch?v=PdYKPAeRLzQ)
+[![run](https://img.youtube.com/vi/BgRjPW4X-rY/default.jpg)](https://www.youtube.com/watch?v=BgRjPW4X-rY)
 
