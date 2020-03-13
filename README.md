@@ -47,7 +47,7 @@ git clone https://github.com/Richard-Gemmell/teensy4_i2c
 cp -r teensy4_i2c arduino/hardware/teensy/avr/libraries/
 ```
 
-## Setup Arduino IDE
+### Setup Arduino IDE
 * Tools
 Board: "Teensy 4.0"<br>
 USB Type: "Serial + Keyboard + Mouse + Joystick"<br>
@@ -62,7 +62,7 @@ cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
 cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py
 ```
 
-## 4Ch Transmitter Settings
+## 4ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
 * ch1
   * steering
@@ -78,7 +78,7 @@ Futaba 7PX<br>
 ![](./transmitter_manual.jpg)<br>
 ![](./transmitter_auto.jpg)<br>
 
-## 3Ch Transmitter Settings
+## 3ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
 * ch1
   * steering
@@ -89,18 +89,18 @@ Steering and throttle: These are normal rc car setting.<br>
 
 Tamiya TTU-08 (FINESPEC 2.4G)<br>
 ![](./transmitter_3ch.jpg)<br>
-## 3CH Wireing
+## 3ch Wireing
 ![](./transmitter_3ch_wire1.jpg)<br>
 
 ## Record training data
-* Transmitter CH3 auto mode.
-* Transmitter CH3 manual mode. (change from auto to manual mode is one of flags)
-* Transmitter CH2 throttle on. (start recording)
-* Transmitter CH3 auto mode. (stop recording)
-* Transmitter CH4 delete records. (delete 120 records.)
+* Transmitter ch3 auto mode.
+* Transmitter ch3 manual mode. (change from auto to manual mode is one of flags)
+* Transmitter ch2 throttle on. (start recording)
+* Transmitter ch3 auto mode. (stop recording)
+* Transmitter ch4 delete records. (delete 120 records.)
 
 ## Autonomous driving
-* Transmitter CH3 auto mode.<br>
+* Transmitter ch3 auto mode.<br>
 If you think your rc car will crash, apply the brakes immediately. Overdrive gives priority to manual operation.<br>
 One second after you release your hand, it switches to automatic mode.<br>
 
