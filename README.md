@@ -4,10 +4,19 @@ Teensy 4.0 RC/LED Controller
 
 ![](./teensy40_overdrive_beta1/wire1.jpg)
 
-## Requirement
+## Requirement for rc car autonomous driving
 * Teensy 4.0
 * 4ch or 3ch rc receiver/transmitter (test with Futaba R334SBS-E/Futaba 7PX)
 * Jetson Nano (I don't test on raspberry pi3/4.)
+
+## Requirement for rc car led decolation
+* Teensy 4.0
+* 4ch or 3ch rc receiver/transmitter
+* USB mobile battery
+* 5V 20mA single connected LEDs. (for beta1)
+
+## Youtube
+[![run](https://img.youtube.com/vi/BgRjPW4X-rY/default.jpg)](https://www.youtube.com/watch?v=BgRjPW4X-rY)
 
 ## Known issue
 * sometime i2c error occures with PCA9685 emulator.<br>
@@ -83,7 +92,6 @@ Tamiya TTU-08 (FINESPEC 2.4G)<br>
 ## 3CH Wireing
 ![](./transmitter_3ch_wire1.jpg)<br>
 
-
 ## Record training data
 * Transmitter CH3 auto mode.
 * Transmitter CH3 manual mode. (change from auto to manual mode is one of flags)
@@ -99,6 +107,10 @@ One second after you release your hand, it switches to automatic mode.<br>
 ## Teensy 4.0 OVERDRIVE beta1
 See [Teensy 4.0 OVERDRIVE beta1](./README_teensy40_overdrive_beta1.md)<br>
 
-## Youtube
-[![run](https://img.youtube.com/vi/BgRjPW4X-rY/default.jpg)](https://www.youtube.com/watch?v=BgRjPW4X-rY)
-
+## ROADMAP
+### Teensy 4.0 OVERDRIVE beta2 (in 2020)
+* Breadboard
+  * LED update. Add more LEDs.
+* I2C
+  * Add new virtual I2C device for RC control instead of PCA9685 emulator. It will be optimized for the RC setting more than PCA9685.
+* Support high speed digital servo. (Manual mode in beta1 is already optimized. But PCA9685 mode is not optimized yet.)
