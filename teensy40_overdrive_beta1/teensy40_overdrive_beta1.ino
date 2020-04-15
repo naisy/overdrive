@@ -28,36 +28,36 @@
  * teensy4_i2c library: https://github.com/Richard-Gemmell/teensy4_i2c
  *   git clone https://github.com/Richard-Gemmell/teensy4_i2c
  *   cp -r teensy4_i2c arduino/hardware/teensy/avr/libraries/
- * 4ch RC Transmitter: Futaba 7PX, Futaba 4PM, etc.
- *   3ch RC Transmitter will be work.
+ * 4ch RC Transmitter: Futaba 7PX, 4PM, etc.
+ *  or 3ch RC Transmitter: Tamiya TTU-08, etc.
  */
 #include "TeensyThreads.h"
 
 #define len(x)  int(sizeof(x) / sizeof((x)[0]))
 
 const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
-const int NEUTRAL_STEERING_PULSE_LENGTH = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1509; // neutral steering value
 const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
 const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
-const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
+const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
 const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
 
 // FOR TT-02 LaFerrari
 /*
 const int RECV_CH1_PULSE_LENGTH_MIN     = 1228; // maximum steering right value
-const int NEUTRAL_STEERING_PULSE_LENGTH = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1509; // neutral steering value
 const int RECV_CH1_PULSE_LENGTH_MAX     = 1736; // maximum steering left value
 const int RECV_CH2_PULSE_LENGTH_MIN     = 1113; // maximum throttle forward value
-const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
+const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
 const int RECV_CH2_PULSE_LENGTH_MAX     = 1970; // maximum throttle brake value
 */
 // FOR TT-02 RR GeForce TS-50A ESC
 /*
 const int RECV_CH1_PULSE_LENGTH_MIN     = 1240; // maximum steering right value
-const int NEUTRAL_STEERING_PULSE_LENGTH = 1520; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1520; // neutral steering value
 const int RECV_CH1_PULSE_LENGTH_MAX     = 1720; // maximum steering left value
 const int RECV_CH2_PULSE_LENGTH_MIN     = 1040; // maximum throttle brake value
-const int NEUTRAL_THROTTLE_PULSE_LENGTH = 1520; // neutral throttle value
+const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
 const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward value
 */
 #define DEBUG 0
@@ -71,10 +71,10 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward valu
  * Threshold for receiver priority.
  * Used to prevent crashes in auto-driving mode.
  */
-const int STEERING_PULSE_LENGTH_MIN_THRESHOLD  = NEUTRAL_STEERING_PULSE_LENGTH - (NEUTRAL_STEERING_PULSE_LENGTH - RECV_CH1_PULSE_LENGTH_MIN)/10;
-const int STEERING_PULSE_LENGTH_MAX_THRESHOLD  = NEUTRAL_STEERING_PULSE_LENGTH - (NEUTRAL_STEERING_PULSE_LENGTH - RECV_CH1_PULSE_LENGTH_MAX)/10;
-const int THROTTLE_PULSE_LENGTH_MIN_THRESHOLD  = NEUTRAL_THROTTLE_PULSE_LENGTH - (NEUTRAL_THROTTLE_PULSE_LENGTH - RECV_CH2_PULSE_LENGTH_MIN)/10;
-const int THROTTLE_PULSE_LENGTH_MAX_THRESHOLD  = NEUTRAL_THROTTLE_PULSE_LENGTH - (NEUTRAL_THROTTLE_PULSE_LENGTH - RECV_CH2_PULSE_LENGTH_MAX)/10;
+const int STEERING_PULSE_LENGTH_MIN_THRESHOLD  = RECV_CH1_PULSE_LENGTH_NEUTRAL - (RECV_CH1_PULSE_LENGTH_NEUTRAL - RECV_CH1_PULSE_LENGTH_MIN)/10;
+const int STEERING_PULSE_LENGTH_MAX_THRESHOLD  = RECV_CH1_PULSE_LENGTH_NEUTRAL - (RECV_CH1_PULSE_LENGTH_NEUTRAL - RECV_CH1_PULSE_LENGTH_MAX)/10;
+const int THROTTLE_PULSE_LENGTH_MIN_THRESHOLD  = RECV_CH2_PULSE_LENGTH_NEUTRAL - (RECV_CH2_PULSE_LENGTH_NEUTRAL - RECV_CH2_PULSE_LENGTH_MIN)/10;
+const int THROTTLE_PULSE_LENGTH_MAX_THRESHOLD  = RECV_CH2_PULSE_LENGTH_NEUTRAL - (RECV_CH2_PULSE_LENGTH_NEUTRAL - RECV_CH2_PULSE_LENGTH_MAX)/10;
 
 /* 
  * PROCESSING HZ
@@ -112,8 +112,8 @@ const int recv_speed_down_range[]  = {1580, 1480, 1280}; // less than: BRAKE, NE
   const int speed_up[]          = {-16, +84, +284}; // greater than: NEUTRAL, MIDDLE, TOP
   const int speed_down[]        = {-56, +44, +244}; // greater than: NEUTRAL, MIDDLE, TOP
 #endif
-const int speed_up_range[]      = {NEUTRAL_STEERING_PULSE_LENGTH+speed_up[0], NEUTRAL_STEERING_PULSE_LENGTH+speed_up[1], NEUTRAL_STEERING_PULSE_LENGTH+speed_up[2]}; // greater than: NEUTRAL, MIDDLE, TOP
-const int speed_down_range[]    = {NEUTRAL_STEERING_PULSE_LENGTH+speed_down[0], NEUTRAL_STEERING_PULSE_LENGTH+speed_down[1], NEUTRAL_STEERING_PULSE_LENGTH+speed_down[2]}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_up_range[]      = {RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[0], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[1], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[2]}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_down_range[]    = {RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[0], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[1], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[2]}; // greater than: NEUTRAL, MIDDLE, TOP
 
 /*
  * INPUT PIN
@@ -1384,16 +1384,16 @@ void loop()
       Serial.print(",");
       Serial.print(hz_counter);
       Serial.print(",");
-      if (input_pulse_length[RECV_CH1] < NEUTRAL_STEERING_PULSE_LENGTH) {
-        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, NEUTRAL_STEERING_PULSE_LENGTH, 0, 512));
+      if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
+        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL, 0, 512));
       } else {
-        Serial.print(map(input_pulse_length[RECV_CH1], NEUTRAL_STEERING_PULSE_LENGTH, RECV_CH1_PULSE_LENGTH_MAX, 512, 1023));
+        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 512, 1023));
       }
       Serial.print(",");
-      if (input_pulse_length[RECV_CH2] < NEUTRAL_THROTTLE_PULSE_LENGTH) {
-        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, NEUTRAL_THROTTLE_PULSE_LENGTH, 0, 512));
+      if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
+        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 512));
       } else {
-        Serial.print(map(input_pulse_length[RECV_CH2], NEUTRAL_THROTTLE_PULSE_LENGTH, RECV_CH2_PULSE_LENGTH_MAX, 512, 1023));
+        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL, RECV_CH2_PULSE_LENGTH_MAX, 512, 1023));
       }
 
       Serial.print(",");
@@ -1429,20 +1429,20 @@ void loop()
             /* PCA9685 MODE */
             Joystick.button(1, 1);
           }
-        if (NEUTRAL_STEERING_PULSE_LENGTH -2 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= NEUTRAL_STEERING_PULSE_LENGTH +2) {
+        if (RECV_CH1_PULSE_LENGTH_NEUTRAL -2 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL +2) {
           // NEUTRAL +- 2us will be neutral. This is for noize cancel.
           Joystick.X(512);
-        } else if (input_pulse_length[RECV_CH1] < NEUTRAL_STEERING_PULSE_LENGTH) {
-          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, NEUTRAL_STEERING_PULSE_LENGTH, 0, 449));
+        } else if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
+          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL, 0, 449));
         } else {
-          Joystick.X(map(input_pulse_length[RECV_CH1], NEUTRAL_STEERING_PULSE_LENGTH, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
+          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
         }
-        if (NEUTRAL_THROTTLE_PULSE_LENGTH -2 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= NEUTRAL_THROTTLE_PULSE_LENGTH +2) {
+        if (RECV_CH2_PULSE_LENGTH_NEUTRAL -2 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL +2) {
           Joystick.Y(512);
-        } else if (input_pulse_length[RECV_CH2] < NEUTRAL_THROTTLE_PULSE_LENGTH) {
-          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, NEUTRAL_THROTTLE_PULSE_LENGTH, 0, 449));
+        } else if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
+          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 449));
         } else {
-          Joystick.Y(map(input_pulse_length[RECV_CH2], NEUTRAL_THROTTLE_PULSE_LENGTH, RECV_CH2_PULSE_LENGTH_MAX, 575, 1023));
+          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL, RECV_CH2_PULSE_LENGTH_MAX, 575, 1023));
         }
         // 574 is 0
         // 575 is 
@@ -1486,4 +1486,3 @@ micros_last[CURRENT] = micros();
       hz_counter = 0;
     }
 }
-
