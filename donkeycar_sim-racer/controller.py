@@ -1377,7 +1377,7 @@ class RC4ChanJoystickController(JoystickController):
     def __init__(self, *args, **kwargs):
         super(RC4ChanJoystickController, self).__init__(*args, **kwargs, dev_fn='/dev/input/js1')
         self.manual_mode = False
-        self.num_records_to_erase = 20
+        self.num_records_to_erase = 120
 
 
     def init_js(self):
