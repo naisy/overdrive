@@ -56,7 +56,51 @@ Optimize: "Faster"<br>
 ![](./teensyduino.png)
 
 ## DonkeyCar Setup
-Use donkeycar 3.1.1.<br>
+* donkeycar 3.1.2 overdrive simulator
+* donkeycar 3.1.1
+
+### donkeycar 3.1.2 overdrive simulator
+Requirements: Experience installing donkeycar simulator.<br>
+donkeycar_sim-racer directory in this repo will be delete. Because I created overdrive branch in my forked donkeycar repo.
+
+```
+cd ~/project
+git clone https://github.com/naisy/donkeycar
+cd donkeycar
+git checkout overdrive
+pip install -e .[pc]
+donkey createcar ~/sim_racer
+```
+and use myconfig.py
+```
+cd ~/project
+git clone https://github.com/naisy/overdrive
+cp overdrive/donkeycar_overdrive/cfg* ~/sim_racer
+```
+Normal recording.
+```
+python manage.py drive --js --myconfig=cfg_manual_server.py
+```
+Normal autonomous driving.
+```
+python manage.py dirve --model=myrnn.h5 --myconfig=cfg_auto_server.py
+```
+Assist recording.
+```
+python manage.py drive --js --model=myrnn.h5 --myconfig=cfg_assist_server.py
+```
+Assist data generate.
+```
+wget https://raw.githubusercontent.com/naisy/donkeycar_tools/master/make_ai_to_train_data.py
+python make_ai_to_train_data.py
+mv data data_assist_org
+mv data_ai data
+python train.py --model=myrnn2.h5 --type=rnn
+```
+
+### donkeycar 3.1.1
+This part will be update to latest version after pandemic.
+
 ```
 cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
 cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py
