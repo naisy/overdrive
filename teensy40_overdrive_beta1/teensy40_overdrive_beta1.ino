@@ -1429,15 +1429,15 @@ void loop()
             /* PCA9685 MODE */
             Joystick.button(1, 1);
           }
-        if (RECV_CH1_PULSE_LENGTH_NEUTRAL -2 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL +2) {
-          // NEUTRAL +- 2us will be neutral. This is for noize cancel.
+        if (RECV_CH1_PULSE_LENGTH_NEUTRAL -3 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL +3) {
+          // NEUTRAL +- 3us will be neutral. This is for noize cancel.
           Joystick.X(512);
         } else if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
           Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL, 0, 449));
         } else {
           Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
         }
-        if (RECV_CH2_PULSE_LENGTH_NEUTRAL -2 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL +2) {
+        if (RECV_CH2_PULSE_LENGTH_NEUTRAL -3 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL +3) {
           Joystick.Y(512);
         } else if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
           Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 449));
