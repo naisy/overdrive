@@ -56,8 +56,59 @@ Optimize: "Faster"<br>
 ![](./teensyduino.png)
 
 ## DonkeyCar Setup
+* donkeycar 3.1.2 overdrive for rc
 * donkeycar 3.1.2 overdrive simulator
 * donkeycar 3.1.1
+
+### donkeycar 3.1.2 overdrive for rc
+on training PC:
+```
+cd ~/project
+git clone https://github.com/naisy/donkeycar
+cd donkeycar
+git checkout overdrive
+pip install -e .[pc]
+donkey createcar ~/mycar
+```
+on Jetson Nano:
+```
+cd ~/project
+git clone https://github.com/naisy/donkeycar
+cd donkeycar
+git checkout overdrive
+pip install -e .[nano]
+donkey createcar ~/mycar
+```
+and use myconfig.py
+```
+cd ~/project
+git clone https://github.com/naisy/overdrive
+cp overdrive/donkeycar_overdrive/cfg* ~/mycar
+```
+Normal recording.
+```
+python manage.py drive --js --myconfig=cfg_manual.py
+```
+Normal autonomous driving.
+```
+python manage.py dirve --model=mylinear.h5 --myconfig=cfg_auto.py
+```
+Assist recording.<br>
+Assist is an experimental feature.<br>
+Create and use speed30 model.<br>
+Steering: user steering.<br>
+Throttle: user throttle + ai throttle.<br>
+```
+python manage.py drive --js --model=mylinear.h5 --myconfig=cfg_assist.py
+```
+Assist data generate.
+```
+wget https://raw.githubusercontent.com/naisy/donkeycar_tools/master/make_ai_to_train_data.py
+python make_ai_to_train_data.py
+mv data data_assist_org
+mv data_ai data
+python train.py --model=mylinear2.h5 --type=linear
+```
 
 ### donkeycar 3.1.2 overdrive simulator
 Requirements: Experience installing donkeycar simulator.<br>
@@ -99,8 +150,9 @@ python train.py --model=myrnn2.h5 --type=rnn
 ```
 
 ### donkeycar 3.1.1
-This part will be update to latest version after pandemic.
+Use donkecar 3.1.2 overdrive for rc.
 
+This is for donkeycar 3.1.1
 ```
 cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
 cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py

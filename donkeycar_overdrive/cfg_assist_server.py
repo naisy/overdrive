@@ -132,8 +132,8 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # NUM_LAST_LAYERS_TO_TRAIN = 7        #when freezing layers, how many layers from the last should be allowed to train?
 # 
 # #WEB CONTROL
-WEB_CONTROL_PORT = 8887             # which port to listen on when making a web controller
-WEB_INIT_MODE = "user"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
+# WEB_CONTROL_PORT = 8887             # which port to listen on when making a web controller
+# WEB_INIT_MODE = "user"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
 # 
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False     #when starting the manage.py, when True, will not require a --js option to use the joystick
@@ -143,17 +143,12 @@ AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle 
 CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
 # NETWORK_JS_SERVER_IP = "192.168.0.1"#when listening for network joystick control, which ip is serving this information
-JOYSTICK_DEADZONE = 0.01             # when non zero, this is the smallest throttle before recording triggered.
+# JOYSTICK_DEADZONE = 0.0             # when non zero, this is the smallest throttle before recording triggered.
 # JOYSTICK_THROTTLE_DIR = -1.0        # use -1.0 to flip forward/backward, use 1.0 to use joystick's natural forward/backward
 # USE_FPV = False                     # send camera data to FPV webserver
 JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
 JOYSTICK_MODE = 'assist'              #(user|assist) assist is only rc4.
 
-
-# 
-# #User assist. from 0.0 to 1.0. 0.0: only ai driving. value > 0: if user control, use this rate for user control.
-USER_STEERING_ASSIST_RATE = 1.0
-USER_THROTTLE_ASSIST_RATE = 1.0
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py
@@ -250,7 +245,7 @@ RECORD_DURING_AI = True        #normally we do not record during ai mode. Set th
 DONKEY_GYM = True
 # DONKEY_SIM_PATH = "path to sim" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
 DONKEY_SIM_PATH = "/home/ubuntu/DonkeySimLinux/donkey_sim.x86_64"
-# DONKEY_GYM_ENV_NAME = "donkey-generated-track-v0" # ("donkey-generated-track-v0"|"donkey-generated-roads-v0"|"donkey-warehouse-v0"|"donkey-avc-sparkfun-v0")
+# DONKEY_GYM_ENV_NAME = "donkey-mountain-track-v0" # ("donkey-generated-track-v0"|"donkey-generated-roads-v0"|"donkey-warehouse-v0"|"donkey-avc-sparkfun-v0")
 GYM_CONF = { "body_style" : "donkey", "body_rgb" : (255, 0, 0), "car_name" : "naisy", "font_size" : 75} # body style(donkey|bare|car01) body rgb 0-255
 # SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
 # SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.
