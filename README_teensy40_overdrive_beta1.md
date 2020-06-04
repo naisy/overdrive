@@ -45,6 +45,19 @@ If you use 3ch transmitter (Tamiya TT-02 XB's transmitter etc.), then set USE_3C
 ```
 #define USE_3CH_TARNSMITTER 0  // 0: use 4 channel transmitter.(Futaba 7PX/4PM etc.) 1: use 3 channel transmitter.(Tamiya TTU-08 etc.)
 ```
+For receivers that send a neutral signal when the transmitter is off, then set USE_RECV_CUTOFF 1. (default 0)<br>
+If the CH2(ESC) signal stays within the threshold for a certain period of time, it will be cut off.
+```
+#define USE_RECV_CUTOFF 0      // 0: For receivers that turn the signal off when the transmitter is off, like the R334SBS-E. 1: For receivers that send a neutral signal when the transmitter is off
+
+#if USE_RECV_CUTOFF
+#define RECV_CUTOFF_PULSE_MAX_THRESHOLD 1510
+#define RECV_CUTOFF_PULSE_MIN_THRESHOLD 1490
+unsigned long micros_cutoff = 500*1000; // 500ms
+#endif
+```
+
+
 
 
 ### DonkeyCar

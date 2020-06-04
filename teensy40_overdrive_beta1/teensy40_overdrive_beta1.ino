@@ -36,7 +36,7 @@
 #define len(x)  int(sizeof(x) / sizeof((x)[0]))
 
 const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
-const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1509; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1500; // neutral steering value
 const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
 const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
 const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
@@ -66,6 +66,21 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward valu
 #define REVERSE 0              // TS-50A ESC should be 1. This uses only for led controll.
 #define USE_PCA9685_EMULATOR 1 // 1: use PCA9685 emulator. 0: use PCA9685 board and P1/P2 pins.
 #define USE_3CH_TARNSMITTER 0  // 0: use 4 channel transmitter.(Futaba 7PX/4PM etc.) 1: use 3 channel transmitter.(Tamiya TTU-08 etc.)
+#define USE_RECV_CUTOFF 0      // 0: For receivers that turn the signal off when the transmitter is off, like the R334SBS-E. 1: For receivers that send a neutral signal when the transmitter is off
+
+/*
+ * Receiver's neutral pulse cut off threshold
+ */
+#if USE_RECV_CUTOFF
+#define RECV_CUTOFF_PULSE_MAX_THRESHOLD 1510
+#define RECV_CUTOFF_PULSE_MIN_THRESHOLD 1490
+unsigned long micros_cutoff = 500*1000; // 500ms
+#endif
+
+/*
+ * Neutral pulse noize cancel
+ */
+#define NEUTRAL_PULSE_IGNORE_THRESHOLD 3 // NEUTRAL +- 3us will be neutral. This is for noize cancel.
 
 /*
  * Threshold for receiver priority.
@@ -106,11 +121,11 @@ const int recv_speed_up_range[]    = {1540, 1440, 1240}; // greater than: NEUTRA
 const int recv_speed_down_range[]  = {1580, 1480, 1280}; // less than: BRAKE, NEUTRAL, MIDDLE
 */
 #if !REVERSE
-  const int speed_up[]          = {+16, -84, -284}; // greater than: NEUTRAL, MIDDLE, TOP
-  const int speed_down[]        = {+56, -44, -244}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_up[]          = {+16, -84, -284}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_down[]        = {+56, -44, -244}; // greater than: NEUTRAL, MIDDLE, TOP
 #else
-  const int speed_up[]          = {-16, +84, +284}; // greater than: NEUTRAL, MIDDLE, TOP
-  const int speed_down[]        = {-56, +44, +244}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_up[]          = {-16, +84, +284}; // greater than: NEUTRAL, MIDDLE, TOP
+const int speed_down[]        = {-56, +44, +244}; // greater than: NEUTRAL, MIDDLE, TOP
 #endif
 const int speed_up_range[]      = {RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[0], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[1], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_up[2]}; // greater than: NEUTRAL, MIDDLE, TOP
 const int speed_down_range[]    = {RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[0], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[1], RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[2]}; // greater than: NEUTRAL, MIDDLE, TOP
@@ -147,13 +162,15 @@ const byte SYSTEM_CH1   = 6; // index of array, Interrupt, with no pulse check
  * micros_last[WAKEUP_TIME]
  * micros_last[FORCE_TIME]
  * micros_last[AFTER_FIRE_TIME]
+ * micros_last[RECV_CH2_CUTOFF_TIME]
  */
-volatile unsigned long micros_last[]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+volatile unsigned long micros_last[]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 const byte CURRENT                     = 7; // index of array
 const byte DELTA_TIME                  = 8; // index of array
 const byte WAKEUP_TIME                 = 9; // index of array
 const byte FORCE_TIME                  = 10; // index of array
 const byte AFTER_FIRE_TIME             = 11; // index of array
+const byte RECV_CH2_CUTOFF_TIME        = 12; // index of array
 volatile unsigned long micros_ch1      = 0;
 volatile unsigned long micros_ch2      = 0;
 volatile unsigned long rising_start[]  = {0, 0, 0, 0, 0, 0};
@@ -193,6 +210,9 @@ const bool PUSHED    = true;  // BUTTON PUSHED STATUS
  * status[ST_MANUAL_THROTTLE]:
  *   !FORCE: normal mode
  *   FORCE: force receiver mode
+ * status[ST_CUTOFF]:
+ *   DEAD: cutoff
+ *   ALIVE: allow signal
  *
  * button_status[BT_MODE]:
  *   same as status[ST_MODE]
@@ -222,9 +242,9 @@ const bool PUSHED    = true;  // BUTTON PUSHED STATUS
  *   Not used. Used as status[ST_PING].
  */
 #if USE_SYSTEM_PING
-  volatile byte status[]         = {RECEIVER, !DELETE, DEAD, !FORCE, !FORCE, !FORCE};
+volatile byte status[]         = {RECEIVER, !DELETE, DEAD, !FORCE, !FORCE, !FORCE, ALIVE};
 #else
-  volatile byte status[]         = {RECEIVER, !DELETE, ALIVE, !FORCE, !FORCE, !FORCE};
+volatile byte status[]         = {RECEIVER, !DELETE, ALIVE, !FORCE, !FORCE, !FORCE, ALIVE};
 #endif
 volatile bool button_status[]  = {!PUSHED, !PUSHED};
 volatile int delete_counter    = 0;
@@ -234,6 +254,7 @@ const int ST_PING              = 2; // index of array
 const int ST_FORCE_RECEIVER    = 3; // index of array
 const int ST_MANUAL_STEERING   = 4; // index of array
 const int ST_MANUAL_THROTTLE   = 5; // index of array
+const int ST_CUTOFF            = 6; // index of array
 const int BT_MODE              = 0; // index of array
 const int BT_DELETE            = 1; // index of array
 bool signal_alive[]            = {DEAD, DEAD, DEAD, DEAD, DEAD, DEAD, DEAD};
@@ -435,6 +456,7 @@ void onSignalChanged1(void)
       status[ST_FORCE_RECEIVER] = !FORCE;
     }
   }
+
   /* if ST_MODE == RECEIVER or FORCE_RECEIVER */
   if (status[ST_MODE] == RECEIVER || status[ST_FORCE_RECEIVER] == FORCE) {
     digitalWriteFast(PWM_OUTPUT_PIN[OUTPUT_CH1], high_low[RECV_CH1]);
@@ -464,9 +486,31 @@ void onSignalChanged2(void)
     }
   }
 
+#if USE_RECV_CUTOFF
+  /* add the micros outside the cutoff range */
+  if (input_pulse_length[RECV_CH2] < RECV_CUTOFF_PULSE_MIN_THRESHOLD || RECV_CUTOFF_PULSE_MAX_THRESHOLD < input_pulse_length[RECV_CH2]) {
+    micros_last[RECV_CH2_CUTOFF_TIME] = micros();
+  }
+#endif
   /* if ST_MODE == RECEIVER or FORCE_RECEIVER */
   if (status[ST_MODE] == RECEIVER || status[ST_FORCE_RECEIVER] == FORCE) {
+#if !USE_RECV_CUTOFF
     digitalWriteFast(PWM_OUTPUT_PIN[OUTPUT_CH2], high_low[RECV_CH2]);
+#else
+    if (micros() - micros_last[RECV_CH2_CUTOFF_TIME] <= micros_cutoff) {
+      /* write pulse if it is not cutoff range and cutoff time */
+      digitalWriteFast(PWM_OUTPUT_PIN[OUTPUT_CH2], high_low[RECV_CH2]);
+      if (status[ST_CUTOFF] == DEAD) {
+        status[ST_CUTOFF] = ALIVE;
+      }
+    } else {
+      /* write no signal */
+      digitalWriteFast(PWM_OUTPUT_PIN[OUTPUT_CH2], LOW);
+      if (status[ST_CUTOFF] == ALIVE) {
+        status[ST_CUTOFF] = DEAD;
+      }
+    }
+#endif
   }
 }
 
@@ -1361,6 +1405,9 @@ void loop()
       Serial.print(",");
       Serial.print(status[ST_MANUAL_THROTTLE]);
       Serial.print(",");
+      Serial.print(status[ST_CUTOFF]);
+      Serial.print(",");
+      Serial.print(",");
       Serial.print(input_pulse_length[RECV_CH1]);
       Serial.print(",");
       Serial.print(input_pulse_length[RECV_CH2]);
@@ -1429,7 +1476,7 @@ void loop()
             /* PCA9685 MODE */
             Joystick.button(1, 1);
           }
-        if (RECV_CH1_PULSE_LENGTH_NEUTRAL -3 <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL +3) {
+        if (RECV_CH1_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD) {
           // NEUTRAL +- 3us will be neutral. This is for noize cancel.
           Joystick.X(512);
         } else if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
@@ -1437,7 +1484,7 @@ void loop()
         } else {
           Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
         }
-        if (RECV_CH2_PULSE_LENGTH_NEUTRAL -3 <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL +3) {
+        if (RECV_CH2_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD) {
           Joystick.Y(512);
         } else if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
           Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 449));
