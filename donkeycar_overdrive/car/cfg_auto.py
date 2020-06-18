@@ -147,7 +147,7 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # 
 # #WEB CONTROL
 WEB_CONTROL_PORT = 8887             # which port to listen on when making a web controller
-WEB_INIT_MODE = "local"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
+WEB_INIT_MODE = "user"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
 # 
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False     #when starting the manage.py, when True, will not require a --js option to use the joystick
@@ -162,7 +162,6 @@ CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|
 # USE_FPV = False                     # send camera data to FPV webserver
 JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
 JOYSTICK_MODE = 'user'              #(user|assist) assist is only rc4.
-
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py

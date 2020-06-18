@@ -83,7 +83,7 @@ and use myconfig.py
 ```
 cd ~/project
 git clone https://github.com/naisy/overdrive
-cp overdrive/donkeycar_overdrive/cfg* ~/mycar
+cp overdrive/donkeycar_overdrive/car/cfg* ~/mycar
 ```
 Normal recording.
 ```
@@ -126,7 +126,7 @@ and use myconfig.py
 ```
 cd ~/project
 git clone https://github.com/naisy/overdrive
-cp overdrive/donkeycar_overdrive/cfg* ~/sim_racer
+cp overdrive/donkeycar_overdrive/sim/cfg* ~/sim_racer
 ```
 Normal recording.
 ```

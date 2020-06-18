@@ -16,35 +16,26 @@
 # MODELS_PATH = os.path.join(CAR_PATH, 'models')
 # 
 # #VEHICLE
-DRIVE_LOOP_HZ = 120      # the vehicle loop will pause if faster than this speed.
+# DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # MAX_LOOPS = None        # the vehicle loop can abort after this many iterations, when given a positive integer.
 # 
 # #CAMERA
-CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
-IMAGE_W = 160
-IMAGE_H = 120
-#IMAGE_W = 816
-#IMAGE_H = 616
-#IMAGE_W = 3264
-#IMAGE_H = 2464
-# USE 360
-#IMAGE_W = 204
-#IMAGE_H = 154
-#IMAGE_W = 224
-#IMAGE_H = 224
-IMAGE_DEPTH = 3         # default RGB=3, make 1 for mono
+# CAMERA_TYPE = "PICAM"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
+# IMAGE_W = 160
+# IMAGE_H = 120
+# IMAGE_DEPTH = 3         # default RGB=3, make 1 for mono
 # CAMERA_FRAMERATE = DRIVE_LOOP_HZ
 # CAMERA_VFLIP = False
 # CAMERA_HFLIP = False
 # # For CSIC camera - If the camera is mounted in a rotated position, changing the below parameter will correct the output frame orientation
-CSIC_CAM_GSTREAMER_FLIP_PARM = 2 # (0 => none , 4 => Flip horizontally, 6 => Flip vertically)
+# CSIC_CAM_GSTREAMER_FLIP_PARM = 0 # (0 => none , 4 => Flip horizontally, 6 => Flip vertically)
 # 
 # # For IMAGE_LIST camera
 # # PATH_MASK = "~/mycar/data/tub_1_20-03-12/*.jpg"
 # 
 # #9865, over rides only if needed, ie. TX2..
 # PCA9685_I2C_ADDR = 0x40     #I2C address, use i2cdetect to validate this number
-PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But other platforms should specify the bus num.
+# PCA9685_I2C_BUSNUM = None   #None will auto detect, which is fine on the pi. But other platforms should specify the bus num.
 # 
 # #SSD1306_128_32
 # USE_SSD1306_128_32 = False    # Enable the SSD_1306 OLED Display
@@ -59,9 +50,7 @@ PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But ot
 # DRIVE_TRAIN_TYPE = "SERVO_ESC" # SERVO_ESC|DC_STEER_THROTTLE|DC_TWO_WHEEL|SERVO_HBRIDGE_PWM|PIGPIO_PWM|MM1|MOCK
 # 
 # #STEERING
-STEERING_CHANNEL = 0            #channel on the 9685 pwm board 0-15
-STEERING_LEFT_PWM = 250          # 1000us
-STEERING_RIGHT_PWM = 500         # 2000us
+# STEERING_CHANNEL = 1            #channel on the 9685 pwm board 0-15
 # STEERING_LEFT_PWM = 460         #pwm value for full left steering
 # STEERING_RIGHT_PWM = 290        #pwm value for full right steering
 # 
@@ -71,10 +60,7 @@ STEERING_RIGHT_PWM = 500         # 2000us
 # STEERING_PWM_INVERTED = False   #If PWM needs to be inverted
 # 
 # #THROTTLE
-THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
-THROTTLE_FORWARD_PWM = 250       # 1000us
-THROTTLE_STOPPED_PWM = 375       # 1520us
-THROTTLE_REVERSE_PWM = 500       # 2000us
+# THROTTLE_CHANNEL = 0            #channel on the 9685 pwm board 0-15
 # THROTTLE_FORWARD_PWM = 500      #pwm value for max forward throttle
 # THROTTLE_STOPPED_PWM = 370      #pwm value for no movement
 # THROTTLE_REVERSE_PWM = 220      #pwm value for max reverse throttle
@@ -103,10 +89,10 @@ THROTTLE_REVERSE_PWM = 500       # 2000us
 # #The DEFAULT_MODEL_TYPE will choose which model will be created at training time. This chooses
 # #between different neural network designs. You can override this setting by passing the command
 # #line parameter --type to the python manage.py train and drive commands.
-DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent)
+# DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent)
 # BATCH_SIZE = 128                #how many records to use when doing one pass of gradient decent. Use a smaller number if your gpu is running out of memory.
 # TRAIN_TEST_SPLIT = 0.8          #what percent of records to use for training. the remaining used for validation.
-MAX_EPOCHS = 50                #how many times to visit all records of your data
+MAX_EPOCHS = 100                #how many times to visit all records of your data
 # SHOW_PLOT = True                #would you like to see a pop up display of final loss?
 # VERBOSE_TRAIN = True             #would you like to see a progress bar with text during training?
 # USE_EARLY_STOP = True           #would you like to stop the training if we see it's not improving fit?
@@ -151,18 +137,17 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # 
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False     #when starting the manage.py, when True, will not require a --js option to use the joystick
-JOYSTICK_MAX_THROTTLE = -1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
-JOYSTICK_STEERING_SCALE = -1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
-AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
-CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
+# JOYSTICK_MAX_THROTTLE = 0.5         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
+# JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
+# AUTO_RECORD_ON_THROTTLE = True      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
+# CONTROLLER_TYPE='ps3'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
 # NETWORK_JS_SERVER_IP = "192.168.0.1"#when listening for network joystick control, which ip is serving this information
 # JOYSTICK_DEADZONE = 0.0             # when non zero, this is the smallest throttle before recording triggered.
 # JOYSTICK_THROTTLE_DIR = -1.0        # use -1.0 to flip forward/backward, use 1.0 to use joystick's natural forward/backward
 # USE_FPV = False                     # send camera data to FPV webserver
-JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
-JOYSTICK_MODE = 'assist'              #(user|assist) assist is only rc4.
-
+# JOYSTICK_DEVICE_FILE = "/dev/input/js0" # this is the unix file use to access the joystick.
+# JOYSTICK_MODE = 'user'              #(user|assist) assist is only rc4.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py
@@ -197,7 +182,7 @@ JOYSTICK_MODE = 'assist'              #(user|assist) assist is only rc4.
 # MM1_SERIAL_PORT = '/dev/ttyS0'  # Serial Port for reading and sending MM1 data.
 # 
 # #RECORD OPTIONS
-RECORD_DURING_AI = True        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
+# RECORD_DURING_AI = False        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
 # 
 # #LED
 # HAVE_RGB_LED = False            #do you have an RGB LED like https://www.amazon.com/dp/B07BNRZWNF
