@@ -162,6 +162,7 @@ CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|
 # USE_FPV = False                     # send camera data to FPV webserver
 JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
 JOYSTICK_MODE = 'user'              #(user|assist) assist is only rc4.
+JOYSTICK_ADD_THROTTLE = 0.0         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py

@@ -148,6 +148,7 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # USE_FPV = False                     # send camera data to FPV webserver
 # JOYSTICK_DEVICE_FILE = "/dev/input/js0" # this is the unix file use to access the joystick.
 # JOYSTICK_MODE = 'user'              #(user|assist) assist is only rc4.
+# JOYSTICK_ADD_THROTTLE = 0.3         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py

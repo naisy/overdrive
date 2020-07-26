@@ -148,6 +148,7 @@ CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|
 # USE_FPV = False                     # send camera data to FPV webserver
 JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
 JOYSTICK_MODE = 'assist'              #(user|assist) assist is only rc4.
+JOYSTICK_ADD_THROTTLE = 0.0         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py
@@ -252,7 +253,7 @@ GYM_CONF["country"] = "Japan"
 GYM_CONF["bio"] = "I race robots."
 # 
 # SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
-SIM_ARTIFICIAL_LATENCY = 150          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.
+SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.
 # 
 # #publish camera over network
 # #This is used to create a tcp service to pushlish the camera feed
