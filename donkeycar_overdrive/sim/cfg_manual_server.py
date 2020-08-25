@@ -247,10 +247,10 @@ DONKEY_GYM = True
 DONKEY_SIM_PATH = "/home/ubuntu/data/DonkeySimLinux/donkey_sim.x86_64"
 #DONKEY_SIM_PATH = "remote"
 DONKEY_GYM_ENV_NAME = "donkey-mountain-track-v0" # ("donkey-generated-track-v0"|"donkey-generated-roads-v0"|"donkey-warehouse-v0"|"donkey-avc-sparkfun-v0"|"donkey-mountain-track-v0")
-# GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
-# GYM_CONF["racer_name"] = "Your Name"
-# GYM_CONF["country"] = "USA"
-# GYM_CONF["bio"] = "I race robots."
+GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
+GYM_CONF["racer_name"] = "Your Name"
+GYM_CONF["country"] = "USA"
+GYM_CONF["bio"] = "I race robots."
 # 
 # SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
 SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.

@@ -134,6 +134,15 @@ Autonomous driving.
 python manage.py dirve --model=myrnn.h5 --myconfig=cfg_auto_server.py
 ```
 
+You need to edit these lines before the race.
+```
+GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100}
+GYM_CONF["racer_name"] = "Your Name"
+GYM_CONF["country"] = "USA"
+GYM_CONF["bio"] = "I race robots."
+GYM_CONF["guid"] = "00000000-0000-4000-0000-000000000000"
+```
+
 #### Old function
 Assist recording.<br>
 `The fusion of Human and AI has failed. AI has been found to be very original and using this feature will prevent human driving.`
