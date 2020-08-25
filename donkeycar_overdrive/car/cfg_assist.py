@@ -301,3 +301,7 @@ RECORD_DURING_AI = True        #normally we do not record during ai mode. Set th
 # STOP_SIGN_DETECTOR = False
 # STOP_SIGN_MIN_SCORE = 0.2
 # STOP_SIGN_SHOW_BOUNDING_BOX = True 
+
+
+# This random string identifies this robot in a race. Should remain constant.
+# GYM_CONF["guid"] = "00000000-0000-4000-0000-000000000000"

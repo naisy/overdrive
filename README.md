@@ -9,6 +9,8 @@ Teensy 4.0 RC/LED Controller
 * 4ch or 3ch rc receiver/transmitter (test with Futaba R334SBS-E/Futaba 7PX)
 * Jetson Nano (I don't test on raspberry pi3/4.)
 
+<hr>
+
 ## Requirement for rc car led decolation
 * Teensy 4.0
 * 4ch or 3ch rc receiver/transmitter
@@ -18,10 +20,14 @@ Teensy 4.0 RC/LED Controller
 ## Youtube
 [![run](https://img.youtube.com/vi/BgRjPW4X-rY/default.jpg)](https://www.youtube.com/watch?v=BgRjPW4X-rY)
 
+<hr>
+
 ## Known issue
 * sometime i2c error occures with PCA9685 emulator.<br>
 * Some motors seem to be affected by noise. (maybe tired motor)<br>
   * If you feels bad signal with throttle on, try polishing the commutator and brush of the motor.<br>
+
+<hr>
 
 ## Teensy Setup
 [Arduino IDE](https://www.arduino.cc/en/main/software)<br>
@@ -55,12 +61,15 @@ CPU Speed: "600 MHz"<br>
 Optimize: "Faster"<br>
 ![](./teensyduino.png)
 
-## DonkeyCar Setup
-* donkeycar 3.1.2 overdrive for rc
-* donkeycar 3.1.2 overdrive simulator
-* donkeycar 3.1.1
+<hr>
 
-### donkeycar 3.1.2 overdrive for rc
+## DonkeyCar Setup
+* donkeycar 3.1.5 overdrive for rc car
+* donkeycar 3.1.5 overdrive simulator
+
+<hr>
+
+### donkeycar 3.1.5 overdrive for rc car
 on training PC:
 ```
 cd ~/project
@@ -85,32 +94,19 @@ cd ~/project
 git clone https://github.com/naisy/overdrive
 cp overdrive/donkeycar_overdrive/car/cfg* ~/mycar
 ```
-Normal recording.
+Manual driving and recording.<br>
+(see also 4ch Transmitter Settings)
 ```
 python manage.py drive --js --myconfig=cfg_manual.py
 ```
-Normal autonomous driving.
+Autonomous driving.
 ```
 python manage.py dirve --model=mylinear.h5 --myconfig=cfg_auto.py
 ```
-Assist recording.<br>
-Assist is an experimental feature.<br>
-Create and use speed30 model.<br>
-Steering: user steering.<br>
-Throttle: user throttle + ai throttle.<br>
-```
-python manage.py drive --js --model=mylinear.h5 --myconfig=cfg_assist.py
-```
-Assist data generate.
-```
-wget https://raw.githubusercontent.com/naisy/donkeycar_tools/master/make_ai_to_train_data.py
-python make_ai_to_train_data.py
-mv data data_assist_org
-mv data_ai data
-python train.py --model=mylinear2.h5 --type=linear
-```
 
-### donkeycar 3.1.2 overdrive simulator
+<hr>
+
+### donkeycar 3.1.5 overdrive simulator
 Requirements: Experience installing donkeycar simulator.<br>
 donkeycar_sim-racer directory in this repo will be delete. Because I created overdrive branch in my forked donkeycar repo.
 
@@ -128,17 +124,26 @@ cd ~/project
 git clone https://github.com/naisy/overdrive
 cp overdrive/donkeycar_overdrive/sim/cfg* ~/sim_racer
 ```
-Normal recording.
+Manual driving and recording.<br>
+This config has constant throttle assist. (JOYSTICK_ADD_THROTTLE = 0.3)<br>
 ```
 python manage.py drive --js --myconfig=cfg_manual_server.py
 ```
-Normal autonomous driving.
+Autonomous driving.
 ```
 python manage.py dirve --model=myrnn.h5 --myconfig=cfg_auto_server.py
 ```
-Assist recording.
+
+#### Old function
+Assist recording.<br>
+`The fusion of Human and AI has failed. AI has been found to be very original and using this feature will prevent human driving.`
+
+Create and use speed30 model.<br>
+Steering: user steering.<br>
+Throttle: user throttle + ai throttle.<br>
 ```
-python manage.py drive --js --model=myrnn.h5 --myconfig=cfg_assist_server.py
+python manage.py drive --js --model=mylinear.h5 --myconfig=cfg_assist_server.py
+.py
 ```
 Assist data generate.
 ```
@@ -146,17 +151,10 @@ wget https://raw.githubusercontent.com/naisy/donkeycar_tools/master/make_ai_to_t
 python make_ai_to_train_data.py
 mv data data_assist_org
 mv data_ai data
-python train.py --model=myrnn2.h5 --type=rnn
+python train.py --model=mylinear2.h5 --type=linear
 ```
 
-### donkeycar 3.1.1
-Use donkecar 3.1.2 overdrive for rc.
-
-This is for donkeycar 3.1.1
-```
-cp donkeycar311/*.py ~/project/donkeycar/donkeycar/parts/
-cp donkeycar311/myconfig.py.nano_120fps ~/mycar/myconfig.py
-```
+<hr>
 
 ## 4ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
@@ -173,6 +171,8 @@ Futaba 7PX<br>
 ![](./transmitter.jpg)<br>
 ![](./transmitter_manual.jpg)<br>
 ![](./transmitter_auto.jpg)<br>
+
+<hr>
 
 ## 3ch Transmitter Settings
 Steering and throttle: These are normal rc car setting.<br>
@@ -200,8 +200,12 @@ Tamiya TTU-08 (FINESPEC 2.4G)<br>
 If you think your rc car will crash, apply the brakes immediately. Overdrive gives priority to manual operation.<br>
 One second after you release your hand, it switches to automatic mode.<br>
 
+<hr>
+
 ## Teensy 4.0 OVERDRIVE beta1
 See [Teensy 4.0 OVERDRIVE beta1](./README_teensy40_overdrive_beta1.md)<br>
+
+<hr>
 
 ## ROADMAP
 ### Teensy 4.0 OVERDRIVE beta2 (in 2020)
