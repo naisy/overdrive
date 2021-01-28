@@ -72,25 +72,25 @@ Optimize: "Faster"<br>
 ### donkeycar 3.1.5 overdrive for rc car
 on training PC:
 ```
-cd ~/project
+cd ~/projects
 git clone https://github.com/naisy/donkeycar
 cd donkeycar
 git checkout overdrive
 pip install -e .[pc]
-donkey createcar ~/mycar
+donkey createcar --path ~/mycar
 ```
 on Jetson Nano:
 ```
-cd ~/project
+cd ~/projects
 git clone https://github.com/naisy/donkeycar
 cd donkeycar
 git checkout overdrive
 pip install -e .[nano]
-donkey createcar ~/mycar
+donkey createcar --path ~/mycar
 ```
 and use myconfig.py
 ```
-cd ~/project
+cd ~/projects
 git clone https://github.com/naisy/overdrive
 cp overdrive/donkeycar_overdrive/car/cfg* ~/mycar
 ```
@@ -111,16 +111,16 @@ Requirements: Experience installing donkeycar simulator.<br>
 donkeycar_sim-racer directory in this repo will be delete. Because I created overdrive branch in my forked donkeycar repo.
 
 ```
-cd ~/project
+cd ~/projects
 git clone https://github.com/naisy/donkeycar
 cd donkeycar
 git checkout overdrive
 pip install -e .[pc]
-donkey createcar ~/sim_racer
+donkey createcar --path ~/sim_racer
 ```
 and use myconfig.py
 ```
-cd ~/project
+cd ~/projects
 git clone https://github.com/naisy/overdrive
 cp overdrive/donkeycar_overdrive/sim/cfg* ~/sim_racer
 ```
