@@ -72,6 +72,7 @@ Optimize: "Faster"<br>
 ### donkeycar 3.1.5 overdrive for rc car
 on training PC:
 ```
+mkdir ~/projects
 cd ~/projects
 git clone https://github.com/naisy/donkeycar
 cd donkeycar
@@ -81,6 +82,7 @@ donkey createcar --path ~/mycar
 ```
 on Jetson Nano:
 ```
+mkdir ~/projects
 cd ~/projects
 git clone https://github.com/naisy/donkeycar
 cd donkeycar
