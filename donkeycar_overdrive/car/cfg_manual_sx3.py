@@ -60,8 +60,8 @@ PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But ot
 # 
 # #STEERING
 STEERING_CHANNEL = 0            #channel on the 9685 pwm board 0-15
-STEERING_LEFT_PWM = 263          # 1000us
-STEERING_RIGHT_PWM = 483         # 2000us
+STEERING_LEFT_PWM = 483          # 1000us
+STEERING_RIGHT_PWM = 263         # 2000us
 # STEERING_LEFT_PWM = 460         #pwm value for full left steering
 # STEERING_RIGHT_PWM = 290        #pwm value for full right steering
 # 
@@ -72,9 +72,9 @@ STEERING_RIGHT_PWM = 483         # 2000us
 # 
 # #THROTTLE
 THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
-THROTTLE_FORWARD_PWM = 263       # 1000us
-THROTTLE_STOPPED_PWM = 373       # 1520us
-THROTTLE_REVERSE_PWM = 483       # 2000us
+THROTTLE_FORWARD_PWM = 483       # 1000us
+THROTTLE_STOPPED_PWM = 378       # 1540us
+THROTTLE_REVERSE_PWM = 263       # 2000us
 # THROTTLE_FORWARD_PWM = 500      #pwm value for max forward throttle
 # THROTTLE_STOPPED_PWM = 370      #pwm value for no movement
 # THROTTLE_REVERSE_PWM = 220      #pwm value for max reverse throttle
@@ -151,8 +151,8 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # 
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False     #when starting the manage.py, when True, will not require a --js option to use the joystick
-JOYSTICK_MAX_THROTTLE = -1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
-JOYSTICK_STEERING_SCALE = -1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
+JOYSTICK_MAX_THROTTLE = 1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
+JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
 AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
 CONTROLLER_TYPE='rc4'               #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
