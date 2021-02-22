@@ -16,13 +16,13 @@
 # MODELS_PATH = os.path.join(CAR_PATH, 'models')
 # 
 # #VEHICLE
-DRIVE_LOOP_HZ = 120      # the vehicle loop will pause if faster than this speed.
+DRIVE_LOOP_HZ = 60      # the vehicle loop will pause if faster than this speed.
 # MAX_LOOPS = None        # the vehicle loop can abort after this many iterations, when given a positive integer.
 # 
 # #CAMERA
 CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
 IMAGE_W = 160
-IMAGE_H = 120
+IMAGE_H = 90
 #IMAGE_W = 816
 #IMAGE_H = 616
 #IMAGE_W = 3264

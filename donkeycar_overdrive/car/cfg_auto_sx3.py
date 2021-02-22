@@ -16,13 +16,13 @@
 # MODELS_PATH = os.path.join(CAR_PATH, 'models')
 # 
 # #VEHICLE
-DRIVE_LOOP_HZ = 120      # the vehicle loop will pause if faster than this speed.
+DRIVE_LOOP_HZ = 60      # the vehicle loop will pause if faster than this speed.
 # MAX_LOOPS = None        # the vehicle loop can abort after this many iterations, when given a positive integer.
 # 
 # #CAMERA
 CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
 IMAGE_W = 160
-IMAGE_H = 120
+IMAGE_H = 90
 #IMAGE_W = 816
 #IMAGE_H = 616
 #IMAGE_W = 3264
@@ -103,7 +103,7 @@ THROTTLE_REVERSE_PWM = 263       # 2000us
 # #The DEFAULT_MODEL_TYPE will choose which model will be created at training time. This chooses
 # #between different neural network designs. You can override this setting by passing the command
 # #line parameter --type to the python manage.py train and drive commands.
-DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent)
+DEFAULT_MODEL_TYPE = 'tensorrt_linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent)
 # BATCH_SIZE = 128                #how many records to use when doing one pass of gradient decent. Use a smaller number if your gpu is running out of memory.
 # TRAIN_TEST_SPLIT = 0.8          #what percent of records to use for training. the remaining used for validation.
 MAX_EPOCHS = 50                #how many times to visit all records of your data
@@ -197,7 +197,7 @@ JOYSTICK_ADD_THROTTLE = 0.0         # constant throttle assist. all corners can 
 # MM1_SERIAL_PORT = '/dev/ttyS0'  # Serial Port for reading and sending MM1 data.
 # 
 # #RECORD OPTIONS
-# RECORD_DURING_AI = False        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
+RECORD_DURING_AI = False        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
 # 
 # #LED
 # HAVE_RGB_LED = False            #do you have an RGB LED like https://www.amazon.com/dp/B07BNRZWNF
