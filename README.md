@@ -348,7 +348,7 @@ First, enable serial output for debugging.
 #define DEBUG 1
 ```
 By using the arduino ide serial monitor, you can check the PWM signal values sent from your receiver.  
-n the following example, you can see that the values of 1ch and 2ch of the rc receiver are as follows.  
+In the following example, you can see that the values of 1ch and 2ch of the rc receiver are as follows.  
 ![](./pwm_calibration1.png)<br>
 1ch: 1521 +-1  
 2ch: 1519 +-2  
