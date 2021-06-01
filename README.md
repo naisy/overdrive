@@ -350,8 +350,8 @@ First, enable serial output for debugging.
 By using the arduino ide serial monitor, you can check the PWM signal values sent from your receiver.  
 n the following example, you can see that the values of 1ch and 2ch of the rc receiver are as follows.  
 ![](./pwm_calibration1.png)<br>
-1ch: 1521 �ｽ繧托ｽｽ�ｱ1  
-2ch: 1519 �ｽ繧托ｽｽ�ｱ2  
+1ch: 1521 +-1  
+2ch: 1519 +-2  
 
 Write this value as a neutral value. 
 ```
@@ -382,8 +382,8 @@ Check the code for more information on the output of the serial monitor.
 
 #### Adjustment the fluctuation width of the neutral pulse
 Change the value of NEUTRAL_PULSE_IGNORE_THRESHOLD in the following cases.  
-1ch: 1521 �ｽ繧托ｽｽ�ｱ5  
-2ch: 1519 �ｽ繧托ｽｽ�ｱ5  
+1ch: 1521 +-5  
+2ch: 1519 +-5  
 ```
 /*
  * Neutral pulse noize cancel
