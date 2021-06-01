@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 naisy
+ * Copyright (c) 2019-2021 naisy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,8 +60,27 @@ const int RECV_CH2_PULSE_LENGTH_MIN     = 1040; // maximum throttle brake value
 const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
 const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward value
 */
-#define DEBUG 0
-#define USE_SYSTEM_PING 0
+// FOR YD2-SX3 Xarvis XX
+/*
+const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
+const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1521; // neutral steering value
+const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
+const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
+const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1520; // neutral throttle value
+const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
+*/
+
+
+/* 
+ *  About USE_SYSTEM_PING
+ * This was designed to receive a beacon to confirm Jetson's survival.
+ * I created it to forcibly stop autonomous driving when Jetson's camera freezes and the GUI freezes.
+ * However, as a result of testing, the beacon emitting program continued to operate even after Jetson froze, 
+ * and continued to emit beacon until Jetson was forcibly restarted.
+ * Therefore, it turned out that the expected behavior was not obtained, which was not what I expected. 
+ */
+#define DEBUG 0                // If 1, enable serial output for debugging. Default 0.
+#define USE_SYSTEM_PING 0      // 0 only.
 #define USE_JOYSTICK 1         // Teensy's joystick is /dev/input/js1
 #define REVERSE 0              // TS-50A ESC should be 1. This uses only for led controll.
 #define USE_PCA9685_EMULATOR 1 // 1: use PCA9685 emulator. 0: use PCA9685 board and P1/P2 pins.
@@ -69,18 +88,20 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle forward valu
 #define USE_RECV_CUTOFF 0      // 0: For receivers that turn the signal off when the transmitter is off, like the R334SBS-E. 1: For receivers that send a neutral signal when the transmitter is off
 
 /*
- * Receiver's neutral pulse cut off threshold
- */
-#if USE_RECV_CUTOFF
-#define RECV_CUTOFF_PULSE_MAX_THRESHOLD 1510
-#define RECV_CUTOFF_PULSE_MIN_THRESHOLD 1490
-unsigned long micros_cutoff = 500*1000; // 500ms
-#endif
-
-/*
  * Neutral pulse noize cancel
  */
 #define NEUTRAL_PULSE_IGNORE_THRESHOLD 3 // NEUTRAL +- 3us will be neutral. This is for noize cancel.
+
+/*
+ * Receiver's neutral pulse cut off threshold
+ */
+#if USE_RECV_CUTOFF
+#define RECV_CH1_CUTOFF_PULSE_MAX_THRESHOLD RECV_CH1_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD
+#define RECV_CH1_CUTOFF_PULSE_MIN_THRESHOLD RECV_CH1_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD
+#define RECV_CH2_CUTOFF_PULSE_MAX_THRESHOLD RECV_CH2_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD
+#define RECV_CH2_CUTOFF_PULSE_MIN_THRESHOLD RECV_CH2_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD
+unsigned long micros_cutoff = 500*1000; // 500ms
+#endif
 
 /*
  * Threshold for receiver priority.
@@ -488,7 +509,7 @@ void onSignalChanged2(void)
 
 #if USE_RECV_CUTOFF
   /* add the micros outside the cutoff range */
-  if (input_pulse_length[RECV_CH2] < RECV_CUTOFF_PULSE_MIN_THRESHOLD || RECV_CUTOFF_PULSE_MAX_THRESHOLD < input_pulse_length[RECV_CH2]) {
+  if (input_pulse_length[RECV_CH2] < RECV_CH2_CUTOFF_PULSE_MIN_THRESHOLD || RECV_CH2_CUTOFF_PULSE_MAX_THRESHOLD < input_pulse_length[RECV_CH2]) {
     micros_last[RECV_CH2_CUTOFF_TIME] = micros();
   }
 #endif
