@@ -381,12 +381,12 @@ In the following example, you can see that the values of 1ch and 2ch of the rc r
 
 Write this value as a neutral value. 
 ```
-const int RECV_CH1_PULSE_LENGTH_MIN     = 1000; // maximum steering right value
+const int RECV_CH1_PULSE_LENGTH_MIN     = 999; // maximum steering right value
 const int RECV_CH1_PULSE_LENGTH_NEUTRAL = 1521; // neutral steering value
-const int RECV_CH1_PULSE_LENGTH_MAX     = 2000; // maximum steering left value
-const int RECV_CH2_PULSE_LENGTH_MIN     = 1000; // maximum throttle forward value
+const int RECV_CH1_PULSE_LENGTH_MAX     = 2003; // maximum steering left value
+const int RECV_CH2_PULSE_LENGTH_MIN     = 999; // maximum throttle forward value
 const int RECV_CH2_PULSE_LENGTH_NEUTRAL = 1519; // neutral throttle value
-const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
+const int RECV_CH2_PULSE_LENGTH_MAX     = 2003; // maximum throttle brake value
 ```
 
 There is no problem with the maximum and minimum values remaining at 1000 and 2000.  
@@ -394,14 +394,24 @@ You can set it in detail, but it only adds to the annoyance.
 With 1000 and 2000 for minimum and maximum, even if the actual pwm pulse used is between 1250 and 1750, it can be covered without any problem.  
 Just set the PCA9685 setting in DonkeyCar's myconfig.py to a value that gives 1000us and 2000us.
 ```
-STEERING_LEFT_PWM = 483           # 1000us
-STEERING_RIGHT_PWM = 263          # 2000us
+STEERING_LEFT_PWM = 491           # 2003us
+STEERING_RIGHT_PWM = 245          # 999us
 
-THROTTLE_FORWARD_PWM = 483       # 1000us
-THROTTLE_STOPPED_PWM = 373       # 1520us
-THROTTLE_REVERSE_PWM = 263       # 2000us
+THROTTLE_FORWARD_PWM = 491       # 2003us
+THROTTLE_STOPPED_PWM = 373       # 1521us
+THROTTLE_REVERSE_PWM = 245       # 999us
 ```
 When training neural networks, it is expected that it will be beneficial to set minimum and maximum in detail so that -1.0 to 1.0 can be clearly used. However, in reality, I can run on 1000 and 2000 without any problem.  
+
+When `DEBUG = 1`, you can check the PCA9685 setting value and pulse value accurately by calibration of donkey car. (Set transmitter 3ch to auto mode. )
+```
+# terminal 1
+python read_usb.py
+# terminal 2
+donkey calibrate --bus=1 channel=0
+```
+![](./read_usb1.png)<br>
+![](./read_usb2.png)<br>
 
 Check the code for more information on the output of the serial monitor. 
 ![](./pwm_calibration2.png)<br>
