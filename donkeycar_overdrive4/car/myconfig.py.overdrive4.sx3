@@ -64,8 +64,8 @@ PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But ot
 # STEERING_LEFT_PWM = 460         #pwm value for full left steering
 # STEERING_RIGHT_PWM = 290        #pwm value for full right steering
 STEERING_CHANNEL = 0              #channel on the 9685 pwm board 0-15
-STEERING_LEFT_PWM = 483           # 1000us
-STEERING_RIGHT_PWM = 263          # 2000us
+STEERING_LEFT_PWM = 491           # 2003us
+STEERING_RIGHT_PWM = 245          # 999us
 # 
 # #STEERING FOR PIGPIO_PWM
 # STEERING_PWM_PIN = 13           #Pin numbering according to Broadcom numbers
@@ -78,9 +78,9 @@ STEERING_RIGHT_PWM = 263          # 2000us
 # THROTTLE_STOPPED_PWM = 370      #pwm value for no movement
 # THROTTLE_REVERSE_PWM = 220      #pwm value for max reverse throttle
 THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
-THROTTLE_FORWARD_PWM = 483       # 1000us
-THROTTLE_STOPPED_PWM = 373       # 1520us
-THROTTLE_REVERSE_PWM = 263       # 2000us
+THROTTLE_FORWARD_PWM = 491       # 2003us
+THROTTLE_STOPPED_PWM = 373       # 1521us
+THROTTLE_REVERSE_PWM = 245       # 999us
 # 
 # #THROTTLE FOR PIGPIO_PWM
 # THROTTLE_PWM_PIN = 18           #Pin numbering according to Broadcom numbers
