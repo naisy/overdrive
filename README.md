@@ -213,7 +213,17 @@ sudo ./run-donkeycar-pc.sh
 
 First time 
 ```
+# launch docker
 sudo ./docker/run-donkeycar-jetson.sh
+```
+Create mycar
+```
+# donkeycar
+donkey createcar
+cd ~/mycar
+# copy sample myconfig.py
+cp ~/projects/overdrive/donkeycar_overdrive4/car/* ./
+cp myconfig.py.overdrive4.sx3 myconfig.py
 ```
 
 If you already have a container
@@ -242,6 +252,15 @@ The same as simulator.
 First time
 ```
 sudo ./docker/run-donkeycar-pc.sh
+```
+Create mycar
+```
+# donkeycar
+donkey createcar
+cd ~/mycar
+# copy sample myconfig.py
+cp ~/projects/overdrive/donkeycar_overdrive4/car/* ./
+cp myconfig.py.overdrive4.sx3 myconfig.py
 ```
 
 If you already have a container
@@ -314,13 +333,20 @@ After training, copy the model file to jetson nano with scp command.
 Autonomous driving has been changed to use TensorRT.  
 (Tensorflow/Keras linear model is still available)  
 Before run this, set the transmitter in manual mode.
+
+```
+# on Jetson host (not docker)
+# (Only needed once) update uff conversion_helpers.py for tensorflow 2.4.0
+sudo sed -i 's/tf\.gfile/tf.io.gfile/g' /usr/lib/python3.6/dist-packages/uff/converters/tensorflow/conversion_helpers.py
+```
+
 ```
 # Jetson Nano
-# make pb
+# h5 to pb
 cd ~/mycar
 python ~/projects/donkeycar/scripts/freeze_model.py --model=linear.h5 --output=linear.pb
 
-# make uff
+#pb to uff
 python /usr/lib/python3.6/dist-packages/uff/bin/convert_to_uff.py linear.pb
 
 # autonomous driving
