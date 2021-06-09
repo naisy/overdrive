@@ -14,6 +14,8 @@ DOCKER_MOUNT_PATH=$DOCKER_USER_HOME/data
 if [ ! -f $HOST_USER_HOME/$XAUTH_FILE ]; then
     touch $HOST_USER_HOME/$XAUTH_FILE
     chown $HOST_USER:$HOST_USER_GROUP $HOST_USER_HOME/$XAUTH_FILE
+    chmod 600 $HOST_USER_HOME/$XAUTH_FILE
+    su $HOST_USER -c "xauth generate :0 . trusted"
 fi
 
 if [ ! -d "$HOST_MOUNT_PATH" ]; then
