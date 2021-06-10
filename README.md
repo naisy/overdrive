@@ -222,7 +222,7 @@ Create mycar
 donkey createcar
 cd ~/mycar
 # copy sample myconfig.py
-cp ~/projects/overdrive/donkeycar_overdrive4/car/* ./
+cp ~/projects/overdrive/myconfig_overdrive4/car/* ./
 cp myconfig.py.overdrive4.sx3 myconfig.py
 ```
 
@@ -259,7 +259,7 @@ Create mycar
 donkey createcar
 cd ~/mycar
 # copy sample myconfig.py
-cp ~/projects/overdrive/donkeycar_overdrive4/car/* ./
+cp ~/projects/overdrive/myconfig_overdrive4/car/* ./
 cp myconfig.py.overdrive4.sx3 myconfig.py
 ```
 
