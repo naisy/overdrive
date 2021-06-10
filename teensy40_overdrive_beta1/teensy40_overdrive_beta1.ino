@@ -103,6 +103,7 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
 #define USE_3CH_TARNSMITTER 0  // 0: use 4 channel transmitter.(Futaba 7PX/4PM etc.) 1: use 3 channel transmitter.(Tamiya TTU-08 etc.)
 #define USE_RECV_CUTOFF 0      // 0: For receivers that turn the signal off when the transmitter is off, like the R334SBS-E. 1: For receivers that send a neutral signal when the transmitter is off
 #define USE_ALWAYS_PCA9685_OUTPUT 0 // 0: Enable OVERDRIVE. 1: Disable OVERDRIVE. If 1, you can ignore the PWM signal adjustment. It also loses the means to stop in the event of a runaway. Due to a request, I have implemented this Destruction God flag. Normally use 0.
+#define USE_OVERDRIVE 1        // 1: Enable OVERDRIVE. 0: Disable OVERDRIVE. If 0, ST_FORCE_RECEIVER is always False. Normally use 1.
 
 /*
  * Neutral pulse noize cancel
@@ -518,11 +519,13 @@ void onSignalChanged1(void)
         status[ST_MANUAL_STEERING] = !FORCE;
       }
     }
+#if USE_OVERDRIVE
     if (status[ST_MANUAL_STEERING] || status[ST_MANUAL_THROTTLE]) {
       status[ST_FORCE_RECEIVER] = FORCE;
     } else {
       status[ST_FORCE_RECEIVER] = !FORCE;
     }
+#endif
   }
 
 #if !USE_ALWAYS_PCA9685_OUTPUT
@@ -549,11 +552,13 @@ void onSignalChanged2(void)
         status[ST_MANUAL_THROTTLE] = !FORCE;
       }
     }
+#if USE_OVERDRIVE
     if (status[ST_MANUAL_THROTTLE] || status[ST_MANUAL_STEERING]) {
       status[ST_FORCE_RECEIVER] = FORCE;
     } else {
       status[ST_FORCE_RECEIVER] = !FORCE;
     }
+#endif
   }
 
 #if USE_RECV_CUTOFF
@@ -1513,15 +1518,15 @@ void loop()
       Serial.print(hz_counter);
       Serial.print(",");
       if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
-        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL, 0, 512));
+        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD, 63, 449));
       } else {
-        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 512, 1023));
+        Serial.print(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD, RECV_CH1_PULSE_LENGTH_MAX, 574, 959));
       }
       Serial.print(",");
       if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
-        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 512));
+        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD, 63, 449));
       } else {
-        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL, RECV_CH2_PULSE_LENGTH_MAX, 512, 1023));
+        Serial.print(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD, RECV_CH2_PULSE_LENGTH_MAX, 574, 959));
       }
 
       Serial.print(",");
@@ -1557,25 +1562,53 @@ void loop()
             /* PCA9685 MODE */
             Joystick.button(1, 1);
           }
+
+        /*
+         * In docs, Joystick.X(value) value is 0 to 1023. 513 is neutral.
+         * https://www.pjrc.com/teensy/td_joystick.html
+         * However, read joystick in python, 449 to 574 is neutral. 0 to 63 is -1.0. 959 to 1023 is 1.0.
+         * Therefore, change the range. 63 to 449 is -1.0 to 0.0, 513 is neutral, 574 to 959 is 0.0 to 1.0.
+         */
         if (RECV_CH1_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD <= input_pulse_length[RECV_CH1] && input_pulse_length[RECV_CH1] <= RECV_CH1_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD) {
           // NEUTRAL +- 3us will be neutral. This is for noize cancel.
-          Joystick.X(512);
+          Joystick.X(513);
         } else if (input_pulse_length[RECV_CH1] < RECV_CH1_PULSE_LENGTH_NEUTRAL) {
-          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL, 0, 449));
+          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_MIN, RECV_CH1_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD, 63, 449));
         } else {
-          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL, RECV_CH1_PULSE_LENGTH_MAX, 575, 1023));
+          Joystick.X(map(input_pulse_length[RECV_CH1], RECV_CH1_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD, RECV_CH1_PULSE_LENGTH_MAX, 574, 959));
         }
         if (RECV_CH2_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD <= input_pulse_length[RECV_CH2] && input_pulse_length[RECV_CH2] <= RECV_CH2_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD) {
-          Joystick.Y(512);
+          Joystick.Y(513);
         } else if (input_pulse_length[RECV_CH2] < RECV_CH2_PULSE_LENGTH_NEUTRAL) {
-          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL, 0, 449));
+          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_MIN, RECV_CH2_PULSE_LENGTH_NEUTRAL - NEUTRAL_PULSE_IGNORE_THRESHOLD, 63, 449));
         } else {
-          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL, RECV_CH2_PULSE_LENGTH_MAX, 575, 1023));
+          Joystick.Y(map(input_pulse_length[RECV_CH2], RECV_CH2_PULSE_LENGTH_NEUTRAL + NEUTRAL_PULSE_IGNORE_THRESHOLD, RECV_CH2_PULSE_LENGTH_MAX, 574, 959));
         }
+
+        // Joystick.X(value) [0, 1023] : python joystick value [-1.0, 1.0]
+        // 60 is -1.0
+        // 62 is -1.0
+        // 63 is -1.0
+        // 64 is -0.9974364452040162
+        // 66 is -0.9922482985930967
+        
+        // 448 is -0.0026245918149357585
+        // 449 is 0
+        // 450 is 0
+        // 451 is 0
+        
         // 574 is 0
-        // 575 is 
-        // 576 is 0.00518799
-        // 580 is 0.01556396
+        // 575 is 0.0025940733054597613
+        // 576 is 0.005188146610919523
+        // 580 is 0.015564439832758568
+
+        // 954 is 0.9870296334727012
+        // 956 is 0.9922177800836207
+        // 957 is 0.9948118533890805
+        // 958 is 0.9974059266945402
+        // 959 is 1.0
+        // 960 is 1.0
+        // 966 is 1.0
   
         Joystick.send_now();
       }
