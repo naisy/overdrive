@@ -8,7 +8,7 @@
 # The update operation will not touch this file.
 # """
 
-import os
+# import os
 # 
 # #PATHS
 # CAR_PATH = PACKAGE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -20,31 +20,41 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # MAX_LOOPS = None        # the vehicle loop can abort after this many iterations, when given a positive integer.
 # 
 # #CAMERA
-# CAMERA_TYPE = "PICAM"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
-# IMAGE_W = 160  # for a CSIC camera this must be 224
-# IMAGE_H = 120  # for a CSIC camera this must be 224
+CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
+#IMAGE_W = 160 # for car
+#IMAGE_H = 90 # for car
+IMAGE_W = 160 # for simulator
+IMAGE_H = 120 # for simulator
+# #IMAGE_W = 816
+# #IMAGE_H = 616
+# #IMAGE_W = 3264
+# #IMAGE_H = 2464
+# #IMAGE_W = 204
+# #IMAGE_H = 154
+# #IMAGE_W = 224
+# #IMAGE_H = 224
 # IMAGE_DEPTH = 3         # default RGB=3, make 1 for mono
 # CAMERA_FRAMERATE = DRIVE_LOOP_HZ
 # CAMERA_VFLIP = False
 # CAMERA_HFLIP = False
 # # For CSIC camera - If the camera is mounted in a rotated position, changing the below parameter will correct the output frame orientation
-# nvvidconv flip-method
-# 0: Identity - no rotation (default)
-# 1: Counterclockwise - 90 degrees
-# 2: Rotate - 180 degrees
-# 3: Clockwise - 90 degrees
-# 4: Horizontal flip
-# 5: Upper right diagonal flip
-# 6: Vertical flip
-# 7: Upper-left diagonal
-# CSIC_CAM_GSTREAMER_FLIP_PARM = 0 # (0 => none , 4 => Flip horizontally, 6 => Flip vertically)
+# # nvvidconv flip-method
+# # 0: Identity - no rotation (default)
+# # 1: Counterclockwise - 90 degrees
+# # 2: Rotate - 180 degrees
+# # 3: Clockwise - 90 degrees
+# # 4: Horizontal flip
+# # 5: Upper right diagonal flip
+# # 6: Vertical flip
+# # 7: Upper-left diagonal
+CSIC_CAM_GSTREAMER_FLIP_PARM = 0
 # 
 # # For IMAGE_LIST camera
 # # PATH_MASK = "~/mycar/data/tub_1_20-03-12/*.jpg"
 # 
 # #9865, over rides only if needed, ie. TX2..
 # PCA9685_I2C_ADDR = 0x40     #I2C address, use i2cdetect to validate this number
-# PCA9685_I2C_BUSNUM = None   #None will auto detect, which is fine on the pi. But other platforms should specify the bus num.
+# PCA9685_I2C_BUSNUM = 1   #None will auto detect, which is fine on the pi. But other platforms should specify the bus num.
 # 
 # #SSD1306_128_32
 # USE_SSD1306_128_32 = False    # Enable the SSD_1306 OLED Display
@@ -60,10 +70,10 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # DRIVE_TRAIN_TYPE = "SERVO_ESC" # SERVO_ESC|DC_STEER_THROTTLE|DC_TWO_WHEEL|DC_TWO_WHEEL_L298N|SERVO_HBRIDGE_PWM|PIGPIO_PWM|MM1|MOCK
 # 
 # #STEERING
-# STEERING_CHANNEL = 1            #channel on the 9685 pwm board 0-15
-# STEERING_LEFT_PWM = 460         #pwm value for full left steering
-# STEERING_STOPPED_PWM = 370      #pwm value for neutral steering
-# STEERING_RIGHT_PWM = 290        #pwm value for full right steering
+STEERING_CHANNEL = 0              #channel on the 9685 pwm board 0-15
+STEERING_LEFT_PWM = 484           # 1970us
+STEERING_STOPPED_PWM = 374        # 1523us
+STEERING_RIGHT_PWM = 262          # 1070us
 # 
 # #STEERING FOR PIGPIO_PWM
 # STEERING_PWM_PIN = 13           #Pin numbering according to Broadcom numbers
@@ -71,10 +81,10 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # STEERING_PWM_INVERTED = False   #If PWM needs to be inverted
 # 
 # #THROTTLE
-# THROTTLE_CHANNEL = 0            #channel on the 9685 pwm board 0-15
-# THROTTLE_FORWARD_PWM = 500      #pwm value for max forward throttle
-# THROTTLE_STOPPED_PWM = 370      #pwm value for no movement
-# THROTTLE_REVERSE_PWM = 220      #pwm value for max reverse throttle
+THROTTLE_CHANNEL = 1            #channel on the 9685 pwm board 0-15
+THROTTLE_FORWARD_PWM = 489       # 1991us
+THROTTLE_STOPPED_PWM = 378       # 1540us
+THROTTLE_REVERSE_PWM = 268       # 1091us
 # 
 # #THROTTLE FOR PIGPIO_PWM
 # THROTTLE_PWM_PIN = 18           #Pin numbering according to Broadcom numbers
@@ -128,7 +138,7 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # 
 # #TRAINING
 # # The default AI framework to use. Choose from (tensorflow|pytorch)
-# DEFAULT_AI_FRAMEWORK = 'tensorflow'
+DEFAULT_AI_FRAMEWORK = 'tensorflow'
 # 
 # # The DEFAULT_MODEL_TYPE will choose which model will be created at training
 # # time. This chooses between different neural network designs. You can
@@ -188,7 +198,7 @@ CONTROLLER_TYPE = 'rc4'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|c
 # JOYSTICK_THROTTLE_DIR = -1.0         # use -1.0 to flip forward/backward, use 1.0 to use joystick's natural forward/backward
 # USE_FPV = False                     # send camera data to FPV webserver
 JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
-JOYSTICK_ADD_THROTTLE = 0.3         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
+JOYSTICK_ADD_THROTTLE = 0.0         # constant throttle assist. 0.3: all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py
@@ -317,7 +327,7 @@ DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/Donkey
 # #donkey-minimonaco-track-v0
 # #donkey-warren-track-v0
 # #donkey-thunderhill-track-v0
-DONKEY_GYM_ENV_NAME = "donkey-warren-track-v0"
+DONKEY_GYM_ENV_NAME = "donkey-generated-track-v0"
 # 
 GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
 GYM_CONF["racer_name"] = "Your Name"
