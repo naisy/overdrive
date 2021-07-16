@@ -8,7 +8,7 @@
 # The update operation will not touch this file.
 # """
 
-import os
+# import os
 # 
 # #PATHS
 # CAR_PATH = PACKAGE_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -16,7 +16,7 @@ import os
 # MODELS_PATH = os.path.join(CAR_PATH, 'models')
 # 
 # #VEHICLE
-DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
+# DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # MAX_LOOPS = None        # the vehicle loop can abort after this many iterations, when given a positive integer.
 # 
 # #CAMERA
@@ -40,6 +40,7 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # #SSD1306_128_32
 # USE_SSD1306_128_32 = False    # Enable the SSD_1306 OLED Display
 # SSD1306_128_32_I2C_ROTATION = 0 # 0 = text is right-side up, 1 = rotated 90 degrees clockwise, 2 = 180 degrees (flipped), 3 = 270 degrees
+# SSD1306_RESOLUTION = 1 # 1 = 128x32; 2 = 128x64
 # 
 # #DRIVETRAIN
 # #These options specify which chasis and motor setup you are using. Most are using SERVO_ESC.
@@ -120,26 +121,28 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 # # The default AI framework to use. Choose from (tensorflow|pytorch)
 # DEFAULT_AI_FRAMEWORK = 'tensorflow'
 # 
-# #The DEFAULT_MODEL_TYPE will choose which model will be created at training time. This chooses
-# #between different neural network designs. You can override this setting by passing the command
-# #line parameter --type to the python manage.py train and drive commands.
+# # The DEFAULT_MODEL_TYPE will choose which model will be created at training
+# # time. This chooses between different neural network designs. You can
+# # override this setting by passing the command line parameter --type to the
+# # python manage.py train and drive commands.
 # # tensorflow models: (linear|categorical|tflite_linear|tensorrt_linear)
 # # pytorch models: (resnet18)
-DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent|inferred|tensorrt_linear|tflite_linear)
+# DEFAULT_MODEL_TYPE = 'linear'   #(linear|categorical|rnn|imu|behavior|3d|localizer|latent|inferred|tensorrt_linear|tflite_linear)
 # BATCH_SIZE = 128                #how many records to use when doing one pass of gradient decent. Use a smaller number if your gpu is running out of memory.
 # TRAIN_TEST_SPLIT = 0.8          #what percent of records to use for training. the remaining used for validation.
-MAX_EPOCHS = 100                #how many times to visit all records of your data
+# MAX_EPOCHS = 100                #how many times to visit all records of your data
 # SHOW_PLOT = True                #would you like to see a pop up display of final loss?
 # VERBOSE_TRAIN = True            #would you like to see a progress bar with text during training?
 # USE_EARLY_STOP = True           #would you like to stop the training if we see it's not improving fit?
-EARLY_STOP_PATIENCE = 10         #how many epochs to wait before no improvement
+# EARLY_STOP_PATIENCE = 5         #how many epochs to wait before no improvement
 # MIN_DELTA = .0005               #early stop will want this much loss change before calling it improved.
 # PRINT_MODEL_SUMMARY = True      #print layers and weights to stdout
 # OPTIMIZER = None                #adam, sgd, rmsprop, etc.. None accepts default
 # LEARNING_RATE = 0.001           #only used when OPTIMIZER specified
 # LEARNING_RATE_DECAY = 0.0       #only used when OPTIMIZER specified
 # SEND_BEST_MODEL_TO_PI = False   #change to true to automatically send best model during training
-CACHE_IMAGES = False             #keep images in memory. will speed succesive epochs, but crater if not enough mem.
+# CREATE_TF_LITE = True           # automatically create tflite model in training
+# CREATE_TENSOR_RT = False        # automatically create tensorrt model in training
 # 
 # PRUNE_CNN = False               #This will remove weights from your model. The primary goal is to increase performance.
 # PRUNE_PERCENT_TARGET = 75       # The desired percentage of pruning.
@@ -161,22 +164,22 @@ CACHE_IMAGES = False             #keep images in memory. will speed succesive ep
 # NUM_LAST_LAYERS_TO_TRAIN = 7        #when freezing layers, how many layers from the last should be allowed to train?
 # 
 # #WEB CONTROL
-WEB_CONTROL_PORT = int(os.getenv("WEB_CONTROL_PORT", 8887))  # which port to listen on when making a web controller
-WEB_INIT_MODE = "user"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
+# WEB_CONTROL_PORT = int(os.getenv("WEB_CONTROL_PORT", 8887))  # which port to listen on when making a web controller
+# WEB_INIT_MODE = "user"              # which control mode to start in. one of user|local_angle|local. Setting local will start in ai mode.
 # 
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False      #when starting the manage.py, when True, will not require a --js option to use the joystick
-JOYSTICK_MAX_THROTTLE = 1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
-JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
-AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
-CONTROLLER_TYPE = 'rc4'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
+# JOYSTICK_MAX_THROTTLE = 0.5         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
+# JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
+# AUTO_RECORD_ON_THROTTLE = True      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
+# CONTROLLER_TYPE = 'xbox'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
 # NETWORK_JS_SERVER_IP = None         #when listening for network joystick control, which ip is serving this information
 # JOYSTICK_DEADZONE = 0.01            # when non zero, this is the smallest throttle before recording triggered.
 # JOYSTICK_THROTTLE_DIR = -1.0         # use -1.0 to flip forward/backward, use 1.0 to use joystick's natural forward/backward
 # USE_FPV = False                     # send camera data to FPV webserver
-JOYSTICK_DEVICE_FILE = "/dev/input/js1" # this is the unix file use to access the joystick.
-JOYSTICK_ADD_THROTTLE = 0.3         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
+# JOYSTICK_DEVICE_FILE = "/dev/input/js0" # this is the unix file use to access the joystick.
+# JOYSTICK_ADD_THROTTLE = 0.0         # constant throttle assist. all corners can turn at speed 30. you can drive comfortably just by turning off the throttle before the corner.
 # 
 # #For the categorical model, this limits the upper bound of the learned throttle
 # #it's very IMPORTANT that this value is matched from the training PC config.py and the robot.py
@@ -232,7 +235,7 @@ JOYSTICK_ADD_THROTTLE = 0.3         # constant throttle assist. all corners can 
 # HAVE_PERFMON = False
 # 
 # #RECORD OPTIONS
-RECORD_DURING_AI = False        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
+# RECORD_DURING_AI = False        #normally we do not record during ai mode. Set this to true to get image and steering records for your Ai. Be careful not to use them to train.
 # AUTO_CREATE_NEW_TUB = False     #create a new tub (tub_YY_MM_DD) directory when recording or append records to data directory directly
 # 
 # #LED
@@ -276,7 +279,7 @@ RECORD_DURING_AI = False        #normally we do not record during ai mode. Set t
 # #Set the TRAIN_BEHAVIORS = True, and use the BEHAVIOR_LED_COLORS to give each behavior a color
 # TRAIN_BEHAVIORS = False
 # BEHAVIOR_LIST = ['Left_Lane', "Right_Lane"]
-# BEHAVIOR_LED_COLORS =[ (0, 10, 0), (10, 0, 0) ] #RGB tuples 0-100 per chanel
+# BEHAVIOR_LED_COLORS = [(0, 10, 0), (10, 0, 0)]  #RGB tuples 0-100 per chanel
 # 
 # #Localizer
 # #The localizer is a neural network that can learn to predict its location on the track.
@@ -292,8 +295,8 @@ RECORD_DURING_AI = False        #normally we do not record during ai mode. Set t
 # #This enables that, and sets the path to the simualator and the environment.
 # #You will want to download the simulator binary from: https://github.com/tawnkramer/donkey_gym/releases/download/v18.9/DonkeySimLinux.zip
 # #then extract that and modify DONKEY_SIM_PATH.
-DONKEY_GYM = True
-DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
+# DONKEY_GYM = False
+# DONKEY_SIM_PATH = "path to sim" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
 # 
 # #Available simulator tracks
 # #donkey-warehouse-v0
@@ -305,15 +308,15 @@ DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/Donkey
 # #donkey-minimonaco-track-v0
 # #donkey-warren-track-v0
 # #donkey-thunderhill-track-v0
-DONKEY_GYM_ENV_NAME = "donkey-warren-track-v0"
+# DONKEY_GYM_ENV_NAME = "donkey-generated-track-v0"
 # 
-GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
-GYM_CONF["racer_name"] = "Your Name"
-GYM_CONF["country"] = "Place"
-GYM_CONF["bio"] = "I race robots."
+# GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
+# GYM_CONF["racer_name"] = "Your Name"
+# GYM_CONF["country"] = "Place"
+# GYM_CONF["bio"] = "I race robots."
 # 
-SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
-SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.
+# SIM_HOST = "127.0.0.1"              # when racing on virtual-race-league use host "trainmydonkey.com"
+# SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in controls. Can use useful in emulating the delay when useing a remote server. values of 100 to 400 probably reasonable.
 # 
 # # Save info from Simulator (pln)
 # SIM_RECORD_LOCATION = False
