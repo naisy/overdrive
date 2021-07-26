@@ -165,7 +165,7 @@ Requirement:
 **Install donkeycar simulator (on PC)**
 ```
 cd ~/
-wget https://github.com/tawnkramer/gym-donkeycar/releases/download/v21.04.15/DonkeySimLinux.zip
+wget https://github.com/tawnkramer/gym-donkeycar/releases/download/v21.07.24/DonkeySimLinux.zip
 unzip DonkeySimLinux.zip
 chmod 755 DonkeySimLinux/donkey_sim.x86_64
 ```
