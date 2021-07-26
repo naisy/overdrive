@@ -25,14 +25,14 @@ IMAGE_W = 160
 IMAGE_H = 90
 #IMAGE_W = 160
 #IMAGE_H = 120
-# #IMAGE_W = 816
-# #IMAGE_H = 616
-# #IMAGE_W = 3264
-# #IMAGE_H = 2464
-# #IMAGE_W = 204
-# #IMAGE_H = 154
-# #IMAGE_W = 224
-# #IMAGE_H = 224
+#IMAGE_W = 816
+#IMAGE_H = 616
+#IMAGE_W = 3264
+#IMAGE_H = 2464
+#IMAGE_W = 204
+#IMAGE_H = 154
+#IMAGE_W = 224
+#IMAGE_H = 224
 IMAGE_DEPTH = 3         # default RGB=3, make 1 for mono
 # CAMERA_FRAMERATE = DRIVE_LOOP_HZ
 # CAMERA_VFLIP = False
@@ -263,19 +263,20 @@ RECORD_DURING_AI = False        #normally we do not record during ai mode. Set t
 # #then extract that and modify DONKEY_SIM_PATH.
 DONKEY_GYM = False
 DONKEY_SIM_PATH = "remote" #"/home/tkramer/projects/sdsandbox/sdsim/build/DonkeySimLinux/donkey_sim.x86_64" when racing on virtual-race-league use "remote", or user "remote" when you want to start the sim manually first.
-# # 
-# # #Available simulator tracks
-# # #donkey-warehouse-v0
-# # #donkey-generated-roads-v0
-# # #donkey-avc-sparkfun-v0
-# # #donkey-generated-track-v0
-# # #donkey-roboracingleague-track-v0
-# # #donkey-waveshare-v0
-# # #donkey-minimonaco-track-v0
-# # #donkey-warren-track-v0
-# # #donkey-thunderhill-track-v0
+# 
+#Available simulator tracks
+#donkey-warehouse-v0
+#donkey-generated-roads-v0
+#donkey-avc-sparkfun-v0
+#donkey-generated-track-v0
+#donkey-roboracingleague-track-v0
+#donkey-waveshare-v0
+#donkey-minimonaco-track-v0
+#donkey-warren-track-v0
+#donkey-thunderhill-track-v0
+#donkey-circuit-launch-track-v0
 DONKEY_GYM_ENV_NAME = "donkey-generated-track-v0"
-# # 
+# 
 GYM_CONF = { "body_style" : "donkey", "body_rgb" : (128, 128, 128), "car_name" : "car", "font_size" : 100} # body style(donkey|bare|car01) body rgb 0-255
 GYM_CONF["racer_name"] = "Your Name"
 GYM_CONF["country"] = "Place"
