@@ -330,27 +330,11 @@ After training, copy the model file to jetson nano with scp command.
 <hr>
 
 #### Autonomous driving
-Autonomous driving has been changed to use TensorRT.  
-(Tensorflow/Keras linear model is still available)  
-Before run this, set the transmitter in manual mode.
-
 ```
-# on Jetson host (not docker)
-# (Only needed once) update uff conversion_helpers.py for tensorflow 2.4.0
-sudo sed -i 's/tf\.gfile/tf.io.gfile/g' /usr/lib/python3.6/dist-packages/uff/converters/tensorflow/conversion_helpers.py
-```
-
-```
-# Jetson Nano
-# h5 to pb
 cd ~/mycar
-python ~/projects/donkeycar/scripts/freeze_model.py --model=linear.h5 --output=linear.pb
-
-#pb to uff
-python /usr/lib/python3.6/dist-packages/uff/bin/convert_to_uff.py linear.pb
-
-# autonomous driving
-python manage.py drive --model=linear.uff
+python manage.py drive --model=linear.h5
+# or you can use tensorflow lite
+python manage.py drive --model=linear.tflite --type=linear_tflite
 ```
 1.  Wait until the camera resolution log is displayed in the terminal.
 2.  Access the following URL with a web browser on your PC.  
