@@ -62,12 +62,12 @@ CSIC_CAM_GSTREAMER_FLIP_PARM = 0
 # SSD1306_RESOLUTION = 1 # 1 = 128x32; 2 = 128x64
 # 
 # #DRIVETRAIN
-# #These options specify which chasis and motor setup you are using. Most are using SERVO_ESC.
+# #These options specify which chasis and motor setup you are using. Most are using I2C_SERVO.
 # #DC_STEER_THROTTLE uses HBridge pwm to control one steering dc motor, and one drive wheel motor
 # #DC_TWO_WHEEL uses HBridge pwm to control two drive motors, one on the left, and one on the right.
 # #SERVO_HBRIDGE_PWM use ServoBlaster to output pwm control from the PiZero directly to control steering, and HBridge for a drive motor.
 # #PIGPIO_PWM uses Raspberrys internal PWM
-# DRIVE_TRAIN_TYPE = "SERVO_ESC" # SERVO_ESC|DC_STEER_THROTTLE|DC_TWO_WHEEL|DC_TWO_WHEEL_L298N|SERVO_HBRIDGE_PWM|PIGPIO_PWM|MM1|MOCK
+# DRIVE_TRAIN_TYPE = "I2C_SERVO" # I2C_SERVO|DC_STEER_THROTTLE|DC_TWO_WHEEL|DC_TWO_WHEEL_L298N|SERVO_HBRIDGE_PWM|PIGPIO_PWM|MM1|MOCK
 # 
 # #STEERING
 STEERING_CHANNEL = 0              #channel on the 9685 pwm board 0-15
@@ -75,7 +75,7 @@ STEERING_LEFT_PWM = 484           # 1970us
 STEERING_STOPPED_PWM = 374        # 1523us
 STEERING_RIGHT_PWM = 262          # 1070us
 # 
-# #STEERING FOR PIGPIO_PWM
+# #STEERING FOR PIGPIO_PWM OUTPUT
 # STEERING_PWM_PIN = 13           #Pin numbering according to Broadcom numbers
 # STEERING_PWM_FREQ = 50          #Frequency for PWM
 # STEERING_PWM_INVERTED = False   #If PWM needs to be inverted
@@ -86,7 +86,7 @@ THROTTLE_FORWARD_PWM = 489       # 1991us
 THROTTLE_STOPPED_PWM = 378       # 1540us
 THROTTLE_REVERSE_PWM = 268       # 1091us
 # 
-# #THROTTLE FOR PIGPIO_PWM
+# #THROTTLE FOR PIGPIO_PWM OUTPUT
 # THROTTLE_PWM_PIN = 18           #Pin numbering according to Broadcom numbers
 # THROTTLE_PWM_FREQ = 50          #Frequency for PWM
 # THROTTLE_PWM_INVERTED = False   #If PWM needs to be inverted
@@ -118,13 +118,6 @@ THROTTLE_REVERSE_PWM = 268       # 1091us
 # LIDAR_TYPE = 'RP' #(RP|YD)
 # LIDAR_LOWER_LIMIT = 90 # angles that will be recorded. Use this to block out obstructed areas on your car, or looking backwards. Note that for the RP A1M8 Lidar, "0" is in the direction of the motor
 # LIDAR_UPPER_LIMIT = 270
-# 
-# 
-# # #RC CONTROL
-# USE_RC = False
-# STEERING_RC_GPIO = 26
-# THROTTLE_RC_GPIO = 20
-# DATA_WIPER_RC_GPIO = 19
 # 
 # #DC_TWO_WHEEL_L298N - with two wheels as drive, left and right.
 # #these GPIO pinouts are only used for the DRIVE_TRAIN_TYPE=DC_TWO_WHEEL_L298N
@@ -158,9 +151,9 @@ EARLY_STOP_PATIENCE = 5         #how many epochs to wait before no improvement
 # PRINT_MODEL_SUMMARY = True      #print layers and weights to stdout
 # OPTIMIZER = None                #adam, sgd, rmsprop, etc.. None accepts default
 # LEARNING_RATE = 0.001           #only used when OPTIMIZER specified
+# LEARNING_RATE_DECAY = 0.0       #only used when OPTIMIZER specified
 TRAIN_LIMIT = None              #No limit. This effects keras 1epoch's training steps. If set, 20000, 40000, 400000, etc.
 VALIDATION_LIMIT = 10000         #This value must set for large datasets. If validation dataset has over 40k, keras will be memory leak.
-# LEARNING_RATE_DECAY = 0.0       #only used when OPTIMIZER specified
 # SEND_BEST_MODEL_TO_PI = False   #change to true to automatically send best model during training
 CREATE_TF_LITE = True           # automatically create tflite model in training
 CREATE_TENSOR_RT = False        # automatically create tensorrt model in training
@@ -171,12 +164,28 @@ CREATE_TENSOR_RT = False        # automatically create tensorrt model in trainin
 # PRUNE_VAL_LOSS_DEGRADATION_LIMIT = 0.2 # The max amout of validation loss that is permitted during pruning.
 # PRUNE_EVAL_PERCENT_OF_DATASET = .05  # percent of dataset used to perform evaluation of model.
 # 
-# # Region of interest cropping
-# # only supported in Categorical and Linear models.
-# # If these crops values are too large, they will cause the stride values to become negative and the model with not be valid.
-# ROI_CROP_TOP = 0                    #the number of rows of pixels to ignore on the top of the image
-# ROI_CROP_BOTTOM = 0                 #the number of rows of pixels to ignore on the bottom of the image
-# 
+# # Augmentations and Transformations
+# AUGMENTATIONS = []
+# TRANSFORMATIONS = []
+# # Settings for brightness and blur, use 'MULTIPLY' and/or 'BLUR' in
+# # AUGMENTATIONS
+# AUG_MULTIPLY_RANGE = (0.5, 1.5)
+# AUG_BLUR_RANGE = (0.0, 3.0)
+# # Region of interest cropping, requires 'CROP' in TRANSFORMATIONS to be set
+# # If these crops values are too large, they will cause the stride values to
+# # become negative and the model with not be valid.
+# ROI_CROP_TOP = 45               # the number of rows of pixels to ignore on the top of the image
+# ROI_CROP_BOTTOM = 0             # the number of rows of pixels to ignore on the bottom of the image
+# ROI_CROP_RIGHT = 0              # the number of rows of pixels to ignore on the right of the image
+# ROI_CROP_LEFT = 0               # the number of rows of pixels to ignore on the left of the image
+# # For trapezoidal see explanation in augmentations.py. Requires 'TRAPEZE' in
+# # TRANSFORMATIONS to be set
+# ROI_TRAPEZE_LL = 0
+# ROI_TRAPEZE_LR = 160
+# ROI_TRAPEZE_UL = 20
+# ROI_TRAPEZE_UR = 140
+# ROI_TRAPEZE_MIN_Y = 60
+# ROI_TRAPEZE_MAX_Y = 120
 # 
 # #Model transfer options
 # #When copying weights during a model transfer operation, should we freeze a certain number of layers
@@ -193,7 +202,7 @@ WEB_INIT_MODE = "user"              # which control mode to start in. one of use
 JOYSTICK_MAX_THROTTLE = 1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
 JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
 AUTO_RECORD_ON_THROTTLE = True      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
-CONTROLLER_TYPE = 'F710'            #(ps3|ps4|xbox|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
+CONTROLLER_TYPE = 'F710'            #(ps3|ps4|xbox|pigpio_rc|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
 # NETWORK_JS_SERVER_IP = None         #when listening for network joystick control, which ip is serving this information
 # JOYSTICK_DEADZONE = 0.01            # when non zero, this is the smallest throttle before recording triggered.
@@ -217,6 +226,18 @@ JOYSTICK_ADD_THROTTLE = 0.3         # constant throttle assist. 0.3: all corners
 # 
 # #SOMBRERO
 # HAVE_SOMBRERO = False           #set to true when using the sombrero hat from the Donkeycar store. This will enable pwm on the hat.
+# 
+# #PIGPIO RC control
+# STEERING_RC_GPIO = 26
+# THROTTLE_RC_GPIO = 20
+# DATA_WIPER_RC_GPIO = 19
+# PIGPIO_STEERING_MID = 1500         # Adjust this value if your car cannot run in a straight line
+# PIGPIO_MAX_FORWARD = 2000          # Max throttle to go fowrward. The bigger the faster
+# PIGPIO_STOPPED_PWM = 1500
+# PIGPIO_MAX_REVERSE = 1000          # Max throttle to go reverse. The smaller the faster
+# PIGPIO_SHOW_STEERING_VALUE = False
+# PIGPIO_INVERT = False
+# PIGPIO_JITTER = 0.025   # threshold below which no signal is reported
 # 
 # #ROBOHAT MM1
 # MM1_STEERING_MID = 1500         # Adjust this value if your car cannot run in a straight line
