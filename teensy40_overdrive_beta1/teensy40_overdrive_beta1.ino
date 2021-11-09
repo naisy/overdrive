@@ -716,7 +716,7 @@ void set_led_blink(int i, int times, int value, bool force_update)
     {
       led_configs[i][1] = LED_BLINK;
       led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_OFF;
+      led_configs[i][3] = LED_POWER_2;
       led_configs[i][4] = value;
       led_configs[i][5] = 0; /* LED CURRENT VALUE */
       led_configs[i][8] = times; /* BLINK_ON_TIMES */
@@ -770,7 +770,7 @@ void set_led_blink2(int i, int times, int value, bool force_update)
     {
       led_configs[i][1] = LED_BLINK2;
       led_configs[i][2] = LED_BLINK2_HZ;
-      led_configs[i][3] = LED_POWER_OFF;
+      led_configs[i][3] = LED_POWER_2;
       led_configs[i][4] = value;
       led_configs[i][5] = 0; /* LED CURRENT VALUE */
       led_configs[i][8] = times; /* BLINK_ON_TIMES */
@@ -789,7 +789,7 @@ void set_led_blink_x_blink(int i, int value, bool force_update)
       set_led_blink(i, 2, value, true);
       led_configs[i][1] = LED_BLINK_X_BLINK;
       led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_OFF;
+      led_configs[i][3] = LED_POWER_2;
       led_configs[i][4] = LED_POWER_MAX;
       led_configs[i][5] = 0; /* LED CURRENT VALUE */
       led_configs[i][14] = 6; /* BB_LENGTH */
@@ -1034,7 +1034,11 @@ void led_control(void)
    */
   for(int i=0; i<NUM_LEDS; i++)
     {
-      if (hz_counter %  (LOOP_HZ/led_configs[i][2]) == 0) {
+      if (button_status[BT_DELETE] == DELETE) {
+	 /* If push delete button, then full light */
+	 analogWrite(LED_PIN[i][0], LED_POWER_MAX);
+      }
+      else if (hz_counter % (LOOP_HZ/led_configs[i][2]) == 0) {
         switch(led_configs[i][1])
           {
           case LED_FLUCTUATION:

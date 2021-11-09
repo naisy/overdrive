@@ -56,6 +56,8 @@ Good pattern:
 [![run](https://img.youtube.com/vi/P3-7nB2ac9M/default.jpg)](https://www.youtube.com/watch?v=P3-7nB2ac9M)
 [![run](https://img.youtube.com/vi/KkKSrlPk_vg/default.jpg)](https://www.youtube.com/watch?v=KkKSrlPk_vg)
 [![run](https://img.youtube.com/vi/DUpsCdNJ-Tc/default.jpg)](https://www.youtube.com/watch?v=DUpsCdNJ-Tc)
+[![run](https://img.youtube.com/vi/9yy7ASttw04/default.jpg)](https://www.youtube.com/watch?v=9yy7ASttw04)
+
 
 <hr>
 
