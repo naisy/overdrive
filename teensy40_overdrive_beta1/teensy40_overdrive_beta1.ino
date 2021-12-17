@@ -95,7 +95,7 @@ const int RECV_CH2_PULSE_LENGTH_MAX     = 2000; // maximum throttle brake value
  * and continued to emit beacon until Jetson was forcibly restarted.
  * Therefore, it turned out that the expected behavior was not obtained, which was not what I expected. 
  */
-#define DEBUG 0                // If 1, enable serial output for debugging. Default 0.
+#define DEBUG 1                // If 1, enable serial output for debugging. Default 0.
 #define USE_SYSTEM_PING 0      // 0 only.
 #define USE_JOYSTICK 1         // Teensy's joystick is /dev/input/js1
 #define REVERSE 0              // TS-50A ESC should be 1. This uses only for led controll.
@@ -136,7 +136,7 @@ const int THROTTLE_PULSE_LENGTH_MAX_THRESHOLD  = RECV_CH2_PULSE_LENGTH_NEUTRAL -
  * PWM_OUT_HZ: PWM output Hz
  * LED_HZ: LED processing Hz
  */
-const int LOOP_HZ                    = 1200; // main loop hz
+const int LOOP_HZ                    = 2400; // main loop hz
 const int PWM_OUT_HZ                 = 60;   // joystick output hz
 const int LED_HZ                     = 100;
 const int LED_BLINK_HZ               = 200;
@@ -179,7 +179,7 @@ const int speed_down_range[]    = {RECV_CH2_PULSE_LENGTH_NEUTRAL+speed_down[0], 
  * PCA9685_CH2: 11  - Throttle
  * SYSTEM_CH1: 13   - System dead or alive check
  */
-const byte INPUT_PIN[]  = {22, 21, 20, 17, 12, 11, 13};
+const byte INPUT_PIN[]  = {22, 21, 20, 17, 12, 11, 13}; // for beta1.
 const byte RECV_CH1     = 0; // index of array, Interrupt
 const byte RECV_CH2     = 1; // index of array, Interrupt
 const byte RECV_CH3     = 2; // index of array, Interrupt
@@ -203,21 +203,23 @@ const byte SYSTEM_CH1   = 6; // index of array, Interrupt, with no pulse check
  * micros_last[AFTER_FIRE_TIME]
  * micros_last[RECV_CH2_CUTOFF_TIME]
  */
-volatile unsigned long micros_last[]   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-const byte CURRENT                     = 7; // index of array
-const byte DELTA_TIME                  = 8; // index of array
-const byte WAKEUP_TIME                 = 9; // index of array
-const byte FORCE_TIME                  = 10; // index of array
-const byte AFTER_FIRE_TIME             = 11; // index of array
-const byte RECV_CH2_CUTOFF_TIME        = 12; // index of array
-volatile unsigned long micros_ch1      = 0;
-volatile unsigned long micros_ch2      = 0;
-volatile unsigned long rising_start[]  = {0, 0, 0, 0, 0, 0};
-volatile long input_pulse_length[]     = {0, 0, 0, 0, 0, 0};
-volatile int high_low[]                = {0, 0, 0, 0, 0, 0}; // HIGH or LOW
-volatile long last_after_fire_pulse_length   = 0;
-volatile long current_throttle_pulse_length  = 0;
-long diff_throttle_pulse_length        = 0;
+volatile unsigned long micros_last[]    = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+const byte CURRENT                      = 7; // index of array
+const byte DELTA_TIME                   = 8; // index of array
+const byte WAKEUP_TIME                  = 9; // index of array
+const byte FORCE_TIME                   = 10; // index of array
+const byte AFTER_FIRE_TIME              = 11; // index of array
+const byte RECV_CH2_CUTOFF_TIME         = 12; // index of array
+volatile unsigned long micros_ch1       = 0;
+volatile unsigned long micros_ch2       = 0;
+volatile unsigned long rising_start[]   = {0, 0, 0, 0, 0, 0};
+volatile long input_pulse_length[]      = {0, 0, 0, 0, 0, 0};
+volatile int high_low[]                 = {0, 0, 0, 0, 0, 0}; // HIGH or LOW
+volatile long last_ch1_pulse_length     = 0;
+volatile long current_ch1_pulse_length  = 0;
+volatile long last_ch2_pulse_length     = 0;
+volatile long current_ch2_pulse_length  = 0;
+long diff_throttle_pulse_length         = 0;
 
 /*
  * STATUS
@@ -307,18 +309,50 @@ const int PWM_OUTPUT_PIN[] = {16, 15};
 const int OUTPUT_CH1 = 0; // array index of PWM_OUTPUT_PIN
 const int OUTPUT_CH2 = 1; // array index of PWM_OUTPUT_PIN
 
-/*
- * LED OUTPUT PIN
- * HEAD_LIGHT: 0
- * BRAKE_LIGHT: 2
- * AFTER_FIRE_1: 6
- * AFTER_FIRE_2: 10
+/* LED_TYPE
+ * 10 types.
  */
-const int LED_PIN[]  = {0, 2, 6, 10};
-const int NUM_LEDS   = len(LED_PIN);
+const int LED_HEAD_LIGHT_1    = 0;
+const int LED_HEAD_LIGHT_2    = 1;
+const int LED_BRAKE_LIGHT_1   = 2;
+const int LED_BRAKE_LIGHT_2   = 3;
+const int LED_AFTER_FIRE_1    = 4;
+const int LED_AFTER_FIRE_2    = 5;
+const int LED_LEFT_WINKER_1   = 6;
+const int LED_LEFT_WINKER_2   = 7;
+const int LED_RIGHT_WINKER_1  = 8;
+const int LED_RIGHT_WINKER_2  = 9;
+const int LED_NOT_USE         = 99;
+
+/*
+ * LED_CONFIG:
+ * {PIN_NUMBER, LED_TYPE}
+ * 12 PINS for LED.(for beta2)
+ * for beta1
+ * LED_HEAD_LIGHT_1: 0
+ * LED_BRAKE_LIGHT_1: 2
+ * LED_AFTER_FIRE_1: 6
+ * LED_AFTER_FIRE_2: 10
+ */
+const int LED_PIN[12][2] = {
+  {0, LED_HEAD_LIGHT_1},
+  {1, LED_NOT_USE},
+  {2, LED_BRAKE_LIGHT_1},
+  {3, LED_NOT_USE},
+  {4, LED_NOT_USE},
+  {5, LED_NOT_USE},
+  {6, LED_AFTER_FIRE_1},
+  {7, LED_NOT_USE},
+  {8, LED_NOT_USE},
+  {9, LED_NOT_USE},
+  {10, LED_AFTER_FIRE_2},
+  {11, LED_NOT_USE}
+};
+
+const int NUM_LEDS = len(LED_PIN);
 
 /* LED_CONFIG:
- * PIN (not used. use LED_PIN[index])
+ * PIN (not used. use LED_PIN[index][0])
  * PATTERN, HZ, MIN, MAX, CURRENT, INCREMENT, CURRENT_INCREMENT, 
  * 8:BLINK_ON_TIMES, BLINK_ON_HZ_LENGTH, BLINK_OFF_HZ_LENGTH, BLINK_CURRENT_HZ, BLINK_ON_COUNT, BLINK_CURRENT_STATUS,
  * 14:BB_LENGTH, BB_ON_TIMES, BB_ON_HZ_LENGTH, BB_OFF_HZ_LENGTH, BB_GLOBAL_HZ, BB_ON_COUNT, BB_CURRENT_STATUS, BB_LOCAL_HZ
@@ -331,7 +365,7 @@ const int LED_POWER_4 = 32;
 const int LED_POWER_MAX = 255;
 const int LED_OFF = 0; // LED: 0
 const int LED_ON = 1; // LED: 255
-const int LED_FLUCTUATION = 2; // LED: 0 to 255
+const int LED_SLOW_BLINK = 2; // LED: 0 to 255
 const int LED_BLINK = 3; // LED: 0 or 255
 const int LED_BLINK2 = 5; // LED: 0 or 255
 const int LED_BLINK_X_BLINK = 4; // LED: 0 or 255
@@ -342,12 +376,16 @@ int led_configs[NUM_LEDS][len(LED_CONFIG)] = {
   {0, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
   {1, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
   {2, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
-  {3, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}
+  {3, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {4, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {5, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {6, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {7, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {8, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {9, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {10, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0},
+  {11, LED_OFF, LED_HZ, LED_POWER_OFF, LED_POWER_MAX, 0, 1, 1, 2, 1, 9, 0, 0, 0, 6, 4, 1, 0, 0, 0, 0, 0}
 };
-const int HEAD_LIGHT    = 0;
-const int BRAKE_LIGHT   = 1;
-const int AFTER_FIRE_1  = 2;
-const int AFTER_FIRE_2  = 3;
 
 int next_value = 0;
 int increment = 0;
@@ -464,7 +502,9 @@ void setup()
 #endif
 
   for(int i=0; i<len(LED_PIN); i++) {
-    pinMode(LED_PIN[i], OUTPUT);
+    if(LED_PIN[i][1] != LED_NOT_USE) {
+      pinMode(LED_PIN[i][0], OUTPUT);
+    }
   }
   pinMode(PWM_OUTPUT_PIN[OUTPUT_CH1], OUTPUT);
   pinMode(PWM_OUTPUT_PIN[OUTPUT_CH2], OUTPUT);
@@ -677,134 +717,182 @@ void onSignalChanged7(void)
 }
 
 
-void set_led_on(int i, int value, bool force_update)
+void set_led_on(int led_type, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_ON || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_ON;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_ON || force_update)
+	    {
+	      led_configs[i][1] = LED_ON;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	    }
+	}
     }
 }
 
-void set_led_off(int i, bool force_update)
+void set_led_off(int led_type, bool force_update)
 {
-  if (led_configs[i][1] != LED_OFF || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_OFF;
-      led_configs[i][3] = LED_POWER_OFF;
-      led_configs[i][4] = LED_POWER_MAX;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_OFF || force_update)
+	    {
+	      led_configs[i][1] = LED_OFF;
+	      led_configs[i][3] = LED_POWER_OFF;
+	      led_configs[i][4] = LED_POWER_MAX;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	    }
+	}
     }
 }
 
-void set_led_fluctuation(int i, int hz, int value, bool force_update)
+void set_led_slow_blink(int led_type, int hz, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_FLUCTUATION || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_FLUCTUATION;
-      led_configs[i][2] = hz;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][6] = 1;
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_SLOW_BLINK || force_update)
+	    {
+	      led_configs[i][1] = LED_SLOW_BLINK;
+	      led_configs[i][2] = hz;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][6] = 1;
+	    }
+	}
     }
 }
 
-void set_led_blink(int i, int times, int value, bool force_update)
+void set_led_blink(int led_type, int times, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_BLINK || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_BLINK;
-      led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_2;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][8] = times; /* BLINK_ON_TIMES */
-      led_configs[i][9] = 1; /* BLINK_ON_HZ_LENGTH */
-      led_configs[i][10] = 9; /* BLINK_OFF_HZ_LENGTH */
-      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
-      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
-      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_BLINK || force_update)
+	    {
+	      led_configs[i][1] = LED_BLINK;
+	      led_configs[i][2] = LED_BLINK_HZ;
+	      led_configs[i][3] = LED_POWER_2;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][8] = times; /* BLINK_ON_TIMES */
+	      led_configs[i][9] = 4; /* BLINK_ON_HZ_LENGTH */
+	      led_configs[i][10] = 6; /* BLINK_OFF_HZ_LENGTH */
+	      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
+	      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
+	      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+	    }
+	}
     }
 }
 
-void set_led_blink_after_fire_1(int i, int times, int value, bool force_update)
+void set_led_blink_after_fire_1(int led_type, int times, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_BLINK_AFTER_FIRE_1 || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_BLINK_AFTER_FIRE_1;
-      led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_2;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][8] = times; /* BLINK_ON_TIMES */
-      led_configs[i][9] = 3; /* BLINK_ON_HZ_LENGTH */
-      led_configs[i][10] = 16; /* BLINK_OFF_HZ_LENGTH */
-      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
-      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
-      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_BLINK_AFTER_FIRE_1 || force_update)
+	    {
+	      led_configs[i][1] = LED_BLINK_AFTER_FIRE_1;
+	      led_configs[i][2] = LED_BLINK_HZ;
+	      led_configs[i][3] = LED_POWER_2;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][8] = times; /* BLINK_ON_TIMES */
+	      led_configs[i][9] = 6; /* BLINK_ON_HZ_LENGTH */
+	      led_configs[i][10] = 32; /* BLINK_OFF_HZ_LENGTH */
+	      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
+	      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
+	      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+	    }
+	}
     }
 }
 
-void set_led_blink_after_fire_2(int i, int times, int value, bool force_update)
+void set_led_blink_after_fire_2(int led_type, int times, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_BLINK_AFTER_FIRE_2 || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_BLINK_AFTER_FIRE_2;
-      led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_2;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][8] = times; /* BLINK_ON_TIMES */
-      led_configs[i][9] = 1; /* BLINK_ON_HZ_LENGTH */
-      led_configs[i][10] = 7; /* BLINK_OFF_HZ_LENGTH */
-      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
-      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
-      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_BLINK_AFTER_FIRE_2 || force_update)
+	    {
+	      led_configs[i][1] = LED_BLINK_AFTER_FIRE_2;
+	      led_configs[i][2] = LED_BLINK_HZ;
+	      led_configs[i][3] = LED_POWER_2;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][8] = times; /* BLINK_ON_TIMES */
+	      led_configs[i][9] = 2; /* BLINK_ON_HZ_LENGTH */
+	      led_configs[i][10] = 14; /* BLINK_OFF_HZ_LENGTH */
+	      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
+	      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
+	      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+	    }
+	}
     }
 }
 
-void set_led_blink2(int i, int times, int value, bool force_update)
+void set_led_blink2(int led_type, int times, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_BLINK2 || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      led_configs[i][1] = LED_BLINK2;
-      led_configs[i][2] = LED_BLINK2_HZ;
-      led_configs[i][3] = LED_POWER_2;
-      led_configs[i][4] = value;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][8] = times; /* BLINK_ON_TIMES */
-      led_configs[i][9] = 4; /* BLINK_ON_HZ_LENGTH */
-      led_configs[i][10] = 36; /* BLINK_OFF_HZ_LENGTH */
-      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
-      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
-      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_BLINK2 || force_update)
+	    {
+	      led_configs[i][1] = LED_BLINK2;
+	      led_configs[i][2] = LED_BLINK2_HZ;
+	      led_configs[i][3] = LED_POWER_2;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][8] = times; /* BLINK_ON_TIMES */
+	      led_configs[i][9] = 4; /* BLINK_ON_HZ_LENGTH */
+	      led_configs[i][10] = 36; /* BLINK_OFF_HZ_LENGTH */
+	      led_configs[i][11] = 0; /* BLINK_CURRENT_HZ */
+	      led_configs[i][12] = 0; /* BLINK_ON_COUNT */
+	      led_configs[i][13] = 0; /* BLINK_CURRENT_STATUS */
+	    }
+	}
     }
 }
 
-void set_led_blink_x_blink(int i, int value, bool force_update)
+void set_led_blink_x_blink(int led_type, int value, bool force_update)
 {
-  if (led_configs[i][1] != LED_BLINK_X_BLINK || force_update)
+  for(int i=0; i<NUM_LEDS; i++)
     {
-      set_led_blink(i, 2, value, true);
-      led_configs[i][1] = LED_BLINK_X_BLINK;
-      led_configs[i][2] = LED_BLINK_HZ;
-      led_configs[i][3] = LED_POWER_2;
-      led_configs[i][4] = LED_POWER_MAX;
-      led_configs[i][5] = 0; /* LED CURRENT VALUE */
-      led_configs[i][14] = 6; /* BB_LENGTH */
-      led_configs[i][15] = 4; /* BB_ON_TIMES */
-      led_configs[i][16] = 1; /* BB_ON_HZ_LENGTH */
-      led_configs[i][17] = 0; /* BB_OFF_HZ_LENGTH */
-      led_configs[i][18] = 0; /* BB_GLOBAL_HZ */
-      led_configs[i][19] = 0; /* BB_ON_COUNT */
-      led_configs[i][20] = 0; /* BB_CURRENT_STATUS */
-      led_configs[i][21] = 0; /* BB_LOCAL_HZ */
+      if (LED_PIN[i][1] == led_type)
+	{
+	  if (led_configs[i][1] != LED_BLINK_X_BLINK || force_update)
+	    {
+	      set_led_blink(led_type, 2, value, true);
+	      led_configs[i][1] = LED_BLINK_X_BLINK;
+	      led_configs[i][2] = LED_BLINK_HZ;
+	      led_configs[i][3] = LED_POWER_2;
+	      led_configs[i][4] = value;
+	      led_configs[i][5] = 0; /* LED CURRENT VALUE */
+	      led_configs[i][14] = 5; /* BB_LENGTH */
+	      led_configs[i][15] = 4; /* BB_ON_TIMES */
+	      led_configs[i][16] = 1; /* BB_ON_HZ_LENGTH */
+	      led_configs[i][17] = 0; /* BB_OFF_HZ_LENGTH */
+	      led_configs[i][18] = 0; /* BB_GLOBAL_HZ */
+	      led_configs[i][19] = 0; /* BB_ON_COUNT */
+	      led_configs[i][20] = 0; /* BB_CURRENT_STATUS */
+	      led_configs[i][21] = 0; /* BB_LOCAL_HZ */
+	    }
+	}
     }
 }
 
 
-void led_fluctuation(int i)
+void led_slow_blink(int i)
 {
   if (led_configs[i][6] % led_configs[i][7] != 0) {
     if (led_configs[i][6]*led_configs[i][7] < 0) {
@@ -824,8 +912,9 @@ void led_fluctuation(int i)
   }
   led_configs[i][5] = next_value;
   led_configs[i][7] = increment;
-  analogWrite(LED_PIN[i], int(led_configs[i][5]));
+  analogWrite(LED_PIN[i][0], int(led_configs[i][5]));
 }
+
 
 void led_blink(int i)
 {
@@ -849,10 +938,10 @@ void led_blink(int i)
 
   if (led_configs[i][13]) {
     /* LED ON */
-    analogWrite(LED_PIN[i], led_configs[i][4]);
+    analogWrite(LED_PIN[i][0], led_configs[i][4]);
   } else {
     /* LED OFF */
-    analogWrite(LED_PIN[i], led_configs[i][3]);
+    analogWrite(LED_PIN[i][0], led_configs[i][3]);
   }
 
   led_configs[i][11] += 1; /* LED CURRENT HZ +1 */
@@ -874,11 +963,11 @@ void led_blink_after_fire_1(int i)
   micros_last[AFTER_FIRE_TIME] = micros();
   /* PCA9685 MODE */
   if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
-    last_after_fire_pulse_length = input_pulse_length[PCA9685_CH2];
+    last_ch2_pulse_length = input_pulse_length[PCA9685_CH2];
   }
   /* RECEVER MODE */
   else {
-    last_after_fire_pulse_length = input_pulse_length[RECV_CH2];
+    last_ch2_pulse_length = input_pulse_length[RECV_CH2];
   }
 
 
@@ -897,10 +986,10 @@ void led_blink_after_fire_1(int i)
 
   if (led_configs[i][13]) {
     /* LED ON */
-    analogWrite(LED_PIN[i], led_configs[i][4]);
+    analogWrite(LED_PIN[i][0], led_configs[i][4]);
   } else {
     /* LED OFF */
-    analogWrite(LED_PIN[i], led_configs[i][3]);
+    analogWrite(LED_PIN[i][0], led_configs[i][3]);
   }
 
   if (led_configs[i][3] > 0) {
@@ -913,7 +1002,11 @@ void led_blink_after_fire_1(int i)
     //if (led_configs[i][11] == (led_configs[i][8] * (led_configs[i][9] + led_configs[i][10]))) {
     led_configs[i][11] = 0;
     led_configs[i][12] = 0;
-    set_led_off(i, false);
+    // set_led_off
+    led_configs[i][1] = LED_OFF;
+    led_configs[i][3] = LED_POWER_OFF;
+    led_configs[i][4] = LED_POWER_MAX;
+    led_configs[i][0] = 0;
   }
 }
 
@@ -929,11 +1022,11 @@ void led_blink_after_fire_2(int i)
   micros_last[AFTER_FIRE_TIME] = micros();
   /* PCA9685 MODE */
   if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
-    last_after_fire_pulse_length = input_pulse_length[PCA9685_CH2];
+    last_ch2_pulse_length = input_pulse_length[PCA9685_CH2];
   }
   /* RECEVER MODE */
   else {
-    last_after_fire_pulse_length = input_pulse_length[RECV_CH2];
+    last_ch2_pulse_length = input_pulse_length[RECV_CH2];
   }
 
 
@@ -952,10 +1045,10 @@ void led_blink_after_fire_2(int i)
 
   if (led_configs[i][13]) {
     /* LED ON */
-    analogWrite(LED_PIN[i], led_configs[i][4]);
+    analogWrite(LED_PIN[i][0], led_configs[i][4]);
   } else {
     /* LED OFF */
-    analogWrite(LED_PIN[i], led_configs[i][3]);
+    analogWrite(LED_PIN[i][0], led_configs[i][3]);
   }
 
   if (led_configs[i][3] > 0) {
@@ -1017,12 +1110,12 @@ void led_blink_x_blink(int i)
 
 void led_on(int i)
 {
-  analogWrite(LED_PIN[i], led_configs[i][4]);
+  analogWrite(LED_PIN[i][0], led_configs[i][4]);
 }
 
 void led_off(int i)
 {
-  analogWrite(LED_PIN[i], 0);
+  analogWrite(LED_PIN[i][0], 0);
 }
 
 void led_control(void)
@@ -1041,8 +1134,8 @@ void led_control(void)
       else if (hz_counter % (LOOP_HZ/led_configs[i][2]) == 0) {
         switch(led_configs[i][1])
           {
-          case LED_FLUCTUATION:
-            led_fluctuation(i);
+          case LED_SLOW_BLINK:
+            led_slow_blink(i);
             break;
           case LED_BLINK:
             led_blink(i);
@@ -1133,14 +1226,16 @@ void loop()
             /* with system signal */
             if (status[ST_PING] == ALIVE) {
               /* LED */
-              set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, false);
-              set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, false);
+              set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, false);
+              //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, false);
+              set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, false);
             }
             /* no system signal */
             else {
               /* LED */
-              set_led_blink(HEAD_LIGHT, 2, LED_POWER_MAX, false);
-              set_led_blink(BRAKE_LIGHT, 2, LED_POWER_MAX, false);
+              set_led_blink(LED_HEAD_LIGHT_1, 2, LED_POWER_MAX, false);
+              //set_led_blink(LED_HEAD_LIGHT_2, 2, LED_POWER_MAX, false);
+              set_led_blink(LED_BRAKE_LIGHT_1, 2, LED_POWER_MAX, false);
             }
           } /* else: RECEIVER MODE. nothing to do. */
         }
@@ -1168,10 +1263,11 @@ void loop()
                 )
               {
                 /* NEUTRAL */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
-                set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("UP TO NEUTRAL");
                 speed_status = SPEED_NEUTRAL;
               }
@@ -1186,10 +1282,11 @@ void loop()
                      )
               {
                 /* NEUTRAL */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
-                set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("DOWN TO NEUTRAL");
                 speed_status = SPEED_NEUTRAL;
               }
@@ -1204,10 +1301,11 @@ void loop()
                      )
               {
                 /* MIDDLE SPEED */
-                set_led_blink_after_fire_2(AFTER_FIRE_1, 2, LED_POWER_3, true);
-                set_led_blink_after_fire_2(AFTER_FIRE_2, 2, LED_POWER_3, true);
-                set_led_on(HEAD_LIGHT, LED_POWER_3, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_1, 2, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_2, 2, LED_POWER_3, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_3, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_3, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_3, true);
                 if (DEBUG) Serial.print("UP TO MIDDLE");
                 speed_status = SPEED_MIDDLE;
               }
@@ -1221,10 +1319,11 @@ void loop()
                      )
               {
                 /* MIDDLE SPEED */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 2, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 2, LED_POWER_MAX, true);
-                set_led_on(HEAD_LIGHT, LED_POWER_3, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_3, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 2, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 2, LED_POWER_MAX, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_3, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_3, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_3, true);
                 if (DEBUG) Serial.print("DOWN TO MIDDLE");
                 speed_status = SPEED_MIDDLE;
               }
@@ -1239,10 +1338,11 @@ void loop()
 #endif
               {
                 /* TOP SPEED */
-                set_led_blink_after_fire_2(AFTER_FIRE_1, 3, LED_POWER_3, true);
-                set_led_blink_after_fire_2(AFTER_FIRE_2, 3, LED_POWER_3, true);
-                set_led_blink2(HEAD_LIGHT, 2, LED_POWER_MAX, true);
-                set_led_blink2(BRAKE_LIGHT, 2, LED_POWER_MAX, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_1, 3, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_2, 3, LED_POWER_3, true);
+                set_led_blink2(LED_HEAD_LIGHT_1, 2, LED_POWER_MAX, true);
+                //set_led_blink2(LED_HEAD_LIGHT_2, 2, LED_POWER_MAX, true);
+                set_led_blink2(LED_BRAKE_LIGHT_1, 2, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("UP TO TOP");
                 speed_status = SPEED_TOP;
               }
@@ -1257,8 +1357,9 @@ void loop()
 #endif
               {
                 /* BRAKE */
-                set_led_on(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_MAX, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("DOWN TO BRAKE");
                 speed_status = SPEED_BRAKE;
               }
@@ -1267,22 +1368,22 @@ void loop()
                 /* MISFIRING SYSTEM */
                 if (micros() > micros_last[AFTER_FIRE_TIME] + 1000000) {
                   if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
-                    current_throttle_pulse_length = input_pulse_length[PCA9685_CH2];
+                    current_ch2_pulse_length = input_pulse_length[PCA9685_CH2];
                   } else {
-                    current_throttle_pulse_length = input_pulse_length[RECV_CH2];
+                    current_ch2_pulse_length = input_pulse_length[RECV_CH2];
                   }
 #if !REVERSE
-                  if (current_throttle_pulse_length <= last_after_fire_pulse_length - 4) {
+                  if (current_ch2_pulse_length <= last_ch2_pulse_length - 4) {
 #else
-                  if (current_throttle_pulse_length >= last_after_fire_pulse_length + 4) {
+                  if (current_ch2_pulse_length >= last_ch2_pulse_length + 4) {
 #endif
-                    diff_throttle_pulse_length = abs(current_throttle_pulse_length - last_after_fire_pulse_length);
+                    diff_throttle_pulse_length = abs(current_ch2_pulse_length - last_ch2_pulse_length);
                     if (diff_throttle_pulse_length > 20) {
-                      set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                      set_led_blink_after_fire_2(AFTER_FIRE_2, 3, LED_POWER_3, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 3, LED_POWER_MAX, true);
                     } else {
-                      set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                      set_led_blink_after_fire_2(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
                     }
                     
                   }
@@ -1293,8 +1394,9 @@ void loop()
             /* no system signal */
             else {
               /* LED */
-              set_led_blink(HEAD_LIGHT, 2, LED_POWER_MAX, false);
-              set_led_blink(BRAKE_LIGHT, 2, LED_POWER_MAX, false);
+              set_led_blink(LED_HEAD_LIGHT_1, 2, LED_POWER_MAX, false);
+              //set_led_blink(LED_HEAD_LIGHT_2, 2, LED_POWER_MAX, false);
+              set_led_blink(LED_BRAKE_LIGHT_1, 2, LED_POWER_MAX, false);
             }
           }
         }
@@ -1323,8 +1425,9 @@ void loop()
           if (status[ST_MODE] == RECEIVER || status[ST_FORCE_RECEIVER] == FORCE) {
             if (DEBUG) Serial.print("RECEIVER MODE no signal ");
             /* LED */
-            set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, false);
-            set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, false);
+            set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, false);
+            //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, false);
+            set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, false);
           }
         }
 
@@ -1348,10 +1451,11 @@ void loop()
                 )
               {
                 /* NEUTRAL */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
-                set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("UP TO NEUTRAL");
                 speed_status = SPEED_NEUTRAL;
               }
@@ -1366,10 +1470,11 @@ void loop()
                      )
               {
                 /* NEUTRAL */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
-                set_led_blink_x_blink(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_fluctuation(BRAKE_LIGHT, LED_POWER_MAX, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                set_led_blink_x_blink(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_blink_x_blink(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_slow_blink(LED_BRAKE_LIGHT_1, LED_POWER_MAX, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("DOWN TO NEUTRAL");
                 speed_status = SPEED_NEUTRAL;
               }
@@ -1384,10 +1489,11 @@ void loop()
                      )
               {
                 /* MIDDLE SPEED */
-                set_led_blink_after_fire_2(AFTER_FIRE_1, 2, LED_POWER_3, true);
-                set_led_blink_after_fire_2(AFTER_FIRE_2, 2, LED_POWER_3, true);
-                set_led_on(HEAD_LIGHT, LED_POWER_3, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_1, 2, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_2, 2, LED_POWER_3, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_3, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_3, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_3, true);
                 if (DEBUG) Serial.print("UP TO MIDDLE");
                 speed_status = SPEED_MIDDLE;
               }
@@ -1401,10 +1507,11 @@ void loop()
                      )
               {
                 /* MIDDLE SPEED */
-                set_led_blink_after_fire_1(AFTER_FIRE_1, 2, LED_POWER_MAX, true);
-                set_led_blink_after_fire_1(AFTER_FIRE_2, 2, LED_POWER_MAX, true);
-                set_led_on(HEAD_LIGHT, LED_POWER_3, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_3, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 2, LED_POWER_MAX, true);
+                set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 2, LED_POWER_MAX, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_3, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_3, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_3, true);
                 if (DEBUG) Serial.print("DOWN TO MIDDLE");
                 speed_status = SPEED_MIDDLE;
               }
@@ -1419,10 +1526,11 @@ void loop()
 #endif
               {
                 /* TOP SPEED */
-                set_led_blink_after_fire_2(AFTER_FIRE_1, 3, LED_POWER_3, true);
-                set_led_blink_after_fire_2(AFTER_FIRE_2, 3, LED_POWER_3, true);
-                set_led_blink2(HEAD_LIGHT, 2, LED_POWER_MAX, true);
-                set_led_blink2(BRAKE_LIGHT, 2, LED_POWER_MAX, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_1, 3, LED_POWER_3, true);
+                set_led_blink_after_fire_2(LED_AFTER_FIRE_2, 3, LED_POWER_3, true);
+                set_led_blink2(LED_HEAD_LIGHT_1, 2, LED_POWER_MAX, true);
+                //set_led_blink2(LED_HEAD_LIGHT_2, 2, LED_POWER_MAX, true);
+                set_led_blink2(LED_BRAKE_LIGHT_1, 2, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("UP TO TOP");
                 speed_status = SPEED_TOP;
               }
@@ -1437,8 +1545,9 @@ void loop()
 #endif
               {
                 /* BRAKE */
-                set_led_on(HEAD_LIGHT, LED_POWER_MAX, true);
-                set_led_on(BRAKE_LIGHT, LED_POWER_MAX, true);
+                set_led_on(LED_HEAD_LIGHT_1, LED_POWER_MAX, true);
+                //set_led_on(LED_HEAD_LIGHT_2, LED_POWER_MAX, true);
+                set_led_on(LED_BRAKE_LIGHT_1, LED_POWER_MAX, true);
                 if (DEBUG) Serial.print("DOWN TO BRAKE");
                 speed_status = SPEED_BRAKE;
               }
@@ -1447,22 +1556,22 @@ void loop()
                 /* MISFIRING SYSTEM */
                 if (micros() > micros_last[AFTER_FIRE_TIME] + 1000000) {
                   if (status[ST_MODE] == PCA9685 && status[ST_FORCE_RECEIVER] != FORCE) {
-                    current_throttle_pulse_length = input_pulse_length[PCA9685_CH2];
+                    current_ch2_pulse_length = input_pulse_length[PCA9685_CH2];
                   } else {
-                    current_throttle_pulse_length = input_pulse_length[RECV_CH2];
+                    current_ch2_pulse_length = input_pulse_length[RECV_CH2];
                   }
 #if !REVERSE
-                  if (current_throttle_pulse_length <= last_after_fire_pulse_length - 4) {
+                  if (current_ch2_pulse_length <= last_ch2_pulse_length - 4) {
 #else
-                  if (current_throttle_pulse_length >= last_after_fire_pulse_length + 4) {
+                  if (current_ch2_pulse_length >= last_ch2_pulse_length + 4) {
 #endif
-                    diff_throttle_pulse_length = abs(current_throttle_pulse_length - last_after_fire_pulse_length);
+                    diff_throttle_pulse_length = abs(current_ch2_pulse_length - last_ch2_pulse_length);
                     if (diff_throttle_pulse_length > 20) {
-                      set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                      set_led_blink_after_fire_2(AFTER_FIRE_2, 3, LED_POWER_3, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 3, LED_POWER_MAX, true);
                     } else {
-                      set_led_blink_after_fire_1(AFTER_FIRE_1, 1, LED_POWER_MAX, true);
-                      set_led_blink_after_fire_2(AFTER_FIRE_2, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_1, 1, LED_POWER_MAX, true);
+                      set_led_blink_after_fire_1(LED_AFTER_FIRE_2, 1, LED_POWER_MAX, true);
                     }
 
                   }
@@ -1634,7 +1743,7 @@ void loop()
   /*
    * sleep interval
    */
-  micros_interval = LOOP_INTERVAL - (micros() - micros_last[CURRENT]);
+  micros_interval = LOOP_INTERVAL - (micros() - micros_last[CURRENT]) -190;
   if (micros_interval > 0) {
     if (micros_interval > LOOP_INTERVAL) {
       /* minus value */
@@ -1651,3 +1760,4 @@ micros_last[CURRENT] = micros();
       hz_counter = 0;
     }
 }
+
