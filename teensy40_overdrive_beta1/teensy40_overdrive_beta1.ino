@@ -1127,9 +1127,12 @@ void led_control(void)
    */
   for(int i=0; i<NUM_LEDS; i++)
     {
-      if (button_status[BT_DELETE] == DELETE) {
-	 /* If push delete button, then full light */
-	 analogWrite(LED_PIN[i][0], LED_POWER_MAX);
+      if(LED_PIN[i][1] == LED_NOT_USE) {
+        continue;
+      }
+      else if (button_status[BT_DELETE] == DELETE) {
+        /* If push delete button, then full light */
+        analogWrite(LED_PIN[i][0], LED_POWER_MAX);
       }
       else if (hz_counter % (LOOP_HZ/led_configs[i][2]) == 0) {
         switch(led_configs[i][1])
