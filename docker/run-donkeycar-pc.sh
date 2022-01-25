@@ -11,19 +11,32 @@ DOCKER_USER_HOME=/home/$DOCKER_USER
 DOCKER_USER_XAUTH=$DOCKER_USER_HOME/$XAUTH_FILE
 DOCKER_MOUNT_PATH=$DOCKER_USER_HOME/data
 
+########################################
+# make .Xauthority
+########################################
 if [ ! -f $HOST_USER_HOME/$XAUTH_FILE ]; then
     touch $HOST_USER_HOME/$XAUTH_FILE
     chown $HOST_USER:$HOST_USER_GROUP $HOST_USER_HOME/$XAUTH_FILE
     chmod 600 $HOST_USER_HOME/$XAUTH_FILE
     DISPLAYNAME=`echo $DISPLAY`
+    if [ -z $DISPLAYNAME ]; then
+	DISPLAYNAME=:0
+    fi
+
     su $HOST_USER -c "xauth generate $DISPLAYNAME . trusted"
 fi
 
+########################################
+# make ~/data/ directory
+########################################
 if [ ! -d "$HOST_MOUNT_PATH" ]; then
     mkdir $HOST_MOUNT_PATH
     chown $HOST_USER:$HOST_USER_GROUP $HOST_MOUNT_PATH
 fi
 
+########################################
+# docker image
+########################################
 IMG=naisy/donkeycar-pc:overdrive4
 
 docker run \

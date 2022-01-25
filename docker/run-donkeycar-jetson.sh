@@ -14,19 +14,32 @@ CSI_CAMERA=/tmp/argus_socket
 CAMSOCK=/tmp/camsock
 NVSCSOCK=/tmp/nvscsock
 
+########################################
+# make .Xauthority
+########################################
 if [ ! -f $HOST_USER_HOME/$XAUTH_FILE ]; then
     touch $HOST_USER_HOME/$XAUTH_FILE
     chown $HOST_USER:$HOST_USER_GROUP $HOST_USER_HOME/$XAUTH_FILE
     chmod 600 $HOST_USER_HOME/$XAUTH_FILE
     DISPLAYNAME=`echo $DISPLAY`
+    if [ -z $DISPLAYNAME ]; then
+	DISPLAYNAME=:0
+    fi
+
     su $HOST_USER -c "xauth generate $DISPLAYNAME . trusted"
 fi
 
+########################################
+# make ~/data/ directory
+########################################
 if [ ! -d "$HOST_MOUNT_PATH" ]; then
     mkdir $HOST_MOUNT_PATH
     chown $HOST_USER:$HOST_USER_GROUP $HOST_MOUNT_PATH
 fi
 
+########################################
+# docker image
+########################################
 IMG=naisy/donkeycar-jetson:overdrive4
 
 # https://docs.docker.com/storage/bind-mounts/
@@ -52,7 +65,3 @@ docker run \
     --privileged \
     --network=host \
 $IMG
-
-# image already included
-#    --mount type=bind,source=/etc/apt/sources.list.d/nvidia-l4t-apt-source.list,target=/etc/apt/sources.list.d/nvidia-l4t-apt-source.list,readonly \
-#    --mount type=bind,source=/etc/apt/trusted.gpg.d/jetson-ota-public.asc,target=/etc/apt/trusted.gpg.d/jetson-ota-public.asc,readonly \
