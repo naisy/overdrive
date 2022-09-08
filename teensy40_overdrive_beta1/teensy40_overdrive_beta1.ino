@@ -552,7 +552,8 @@ void onSignalChanged1(void)
     if (input_pulse_length[RECV_CH1] < STEERING_PULSE_LENGTH_MIN_THRESHOLD ||
         STEERING_PULSE_LENGTH_MAX_THRESHOLD < input_pulse_length[RECV_CH1]) {
       status[ST_MANUAL_STEERING] = FORCE;
-      micros_last[FORCE_TIME] = micros();
+      micros_last[RECV_CH1] = micros();
+      micros_last[FORCE_TIME] = micros_last[RECV_CH1];
     } else {
       micros_ch1 = micros();
       if (micros_ch1 - micros_last[FORCE_TIME] >= 1000000 && micros_ch1 > micros_last[FORCE_TIME]) { // more than 1 sec
@@ -584,7 +585,8 @@ void onSignalChanged2(void)
     /* FORCE RECEVER MODE THRESHOLD CHECK. IF PULSE IS OUT OF RANGE, THEN SWITCH TO FORCE RECEVER MODE. */
     if (input_pulse_length[RECV_CH2] < THROTTLE_PULSE_LENGTH_MIN_THRESHOLD ||
         THROTTLE_PULSE_LENGTH_MAX_THRESHOLD < input_pulse_length[RECV_CH2]) {
-      status[ST_MANUAL_THROTTLE] = FORCE;
+      micros_last[RECV_CH2] = micros();
+      micros_last[FORCE_TIME] = micros_last[RECV_CH2];
       micros_last[FORCE_TIME] = micros();
     } else {
       micros_ch2 = micros();
