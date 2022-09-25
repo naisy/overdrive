@@ -1063,7 +1063,7 @@ void led_blink_after_fire_2(int i)
     //if (led_configs[i][11] == (led_configs[i][8] * (led_configs[i][9] + led_configs[i][10]))) {
     led_configs[i][11] = 0;
     led_configs[i][12] = 0;
-    set_led_blink_after_fire_1(i, led_configs[i][8]-1, LED_POWER_MAX, true);
+    set_led_blink_after_fire_1(LED_AFTER_FIRE_1, led_configs[i][8]-1, LED_POWER_MAX, true);
   }
 }
 
