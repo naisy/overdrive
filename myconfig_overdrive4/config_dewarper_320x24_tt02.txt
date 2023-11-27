@@ -12,9 +12,9 @@ surface-index=0
 width=320
 height=24
 # ROI
-top-angle=72
-bottom-angle=90
+top-angle=82
+bottom-angle=89
 pitch=88.5
 yaw=-88
 roll=90
-focal-length=80
+focal-length=170
