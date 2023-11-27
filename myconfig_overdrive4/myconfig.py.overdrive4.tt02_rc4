@@ -24,7 +24,7 @@ CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
 # #IMAGE_W = 160 # for car
 # #IMAGE_H = 90 # for car
 IMAGE_W = 160 # for car with nvdewarper
-IMAGE_H = 40 # for car with nvdewarper
+IMAGE_H = 12 # for car with nvdewarper
 # #IMAGE_W = 160 # for simulator
 # #IMAGE_H = 120 # for simulator
 # #IMAGE_W = 816
@@ -51,7 +51,7 @@ IMAGE_H = 40 # for car with nvdewarper
 # # 7: Upper-left diagonal
 CSIC_CAM_GSTREAMER_FLIP_PARM = 2
 NVDEWARPER = True  # if true, image width x height must be 160 x 40.
-CONFIG_DEWARPER = "/home/jetson/data/mycar4/config_dewarper_tt02.txt"
+CONFIG_DEWARPER = "/home/jetson/data/mycar4/config_dewarper_tt02_12pix.txt"
 # 
 # # For IMAGE_LIST camera
 # # PATH_MASK = "~/mycar/data/tub_1_20-03-12/*.jpg"
@@ -204,7 +204,7 @@ WEB_INIT_MODE = "user"              # which control mode to start in. one of use
 # #JOYSTICK
 # USE_JOYSTICK_AS_DEFAULT = False      #when starting the manage.py, when True, will not require a --js option to use the joystick
 JOYSTICK_MAX_THROTTLE = 1.0         #this scalar is multiplied with the -1 to 1 throttle value to limit the maximum throttle. This can help if you drop the controller or just don't need the full speed available.
-JOYSTICK_STEERING_SCALE = 1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
+JOYSTICK_STEERING_SCALE = -1.0       #some people want a steering that is less sensitve. This scalar is multiplied with the steering -1 to 1. It can be negative to reverse dir.
 AUTO_RECORD_ON_THROTTLE = False      #if true, we will record whenever throttle is not zero. if false, you must manually toggle recording with some other trigger. Usually circle button on joystick.
 CONTROLLER_TYPE = 'rc4'            #(ps3|ps4|xbox|pigpio_rc|nimbus|wiiu|F710|rc3|rc4|MM1|custom) custom will run the my_joystick.py controller written by the `donkey createjs` command
 # USE_NETWORKED_JS = False            #should we listen for remote joystick control over the network?
@@ -382,7 +382,8 @@ SIM_ARTIFICIAL_LATENCY = 0          # this is the millisecond latency in control
 # AI_LAUNCH_KEEP_ENABLED = False      # when False ( default) you will need to hit the AI_LAUNCH_ENABLE_BUTTON for each use. This is safest. When this True, is active on each trip into "local" ai mode.
 # 
 # #Scale the output of the throttle of the ai pilot for all model types.
-# AI_THROTTLE_MULT = 1.0              # this multiplier will scale every throttle value for all output from NN models
+STEERING_GAIN = 1.0
+THROTTLE_GAIN = 1.0                   # this multiplier will scale every throttle value for all output from NN models
 # 
 # #Path following
 # PATH_FILENAME = "donkey_path.pkl"   # the path will be saved to this filename
