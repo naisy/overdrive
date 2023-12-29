@@ -23,8 +23,10 @@ DRIVE_LOOP_HZ = 20      # the vehicle loop will pause if faster than this speed.
 CAMERA_TYPE = "CSIC"   # (PICAM|WEBCAM|CVCAM|CSIC|V4L|D435|MOCK|IMAGE_LIST)
 # #IMAGE_W = 160 # for car
 # #IMAGE_H = 90 # for car
-IMAGE_W = 160 # for car with nvdewarper
-IMAGE_H = 40 # for car with nvdewarper
+#IMAGE_W = 160 # for car with nvdewarper
+#IMAGE_H = 40 # for car with nvdewarper
+IMAGE_W = 320
+IMAGE_H = 24
 # #IMAGE_W = 160 # for simulator
 # #IMAGE_H = 120 # for simulator
 # #IMAGE_W = 816
@@ -51,7 +53,7 @@ IMAGE_H = 40 # for car with nvdewarper
 # # 7: Upper-left diagonal
 CSIC_CAM_GSTREAMER_FLIP_PARM = 2
 NVDEWARPER = True  # if true, image width x height must be 160 x 40.
-CONFIG_DEWARPER = "/home/jetson/data/mycar4/config_dewarper_tt02.txt"
+CONFIG_DEWARPER = "/home/jetson/data/mycar4/config_dewarper_320x24_tt02.txt"
 # 
 # # For IMAGE_LIST camera
 # # PATH_MASK = "~/mycar/data/tub_1_20-03-12/*.jpg"
